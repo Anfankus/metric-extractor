@@ -1,25 +1,25 @@
 package cp.cn.model;
 
 import com.github.mauricioaniche.ck.CKNumber;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.PrintStream;
+
+/**
+ * SingleClassAllMetrics 表示单一类的所有度量值，ck包中CKNumber类的封装，
+ * 提供 返回度量指标名称数组，和度量值数组的方法
+ */
+
 
 public class SingleClassAllMetrics {
   private CKNumber metrics;
   public SingleClassAllMetrics(CKNumber source){
     metrics=source;
   }
-  public String[] getMetricsName(){
-    return "dit,noc,wmc,cbo,lcom,rfc,nom,nopm,nosm,no,nopf,nosf,nosi,loc".split(",");
-  }
 
-  public CKNumber getMetrics() {
-    return metrics;
-  }
-
+  /**
+   * 获取度量值数值
+   * @return 14个度量值的数组
+   */
   public Integer[] getMetricsVal(){
-
     return new Integer[]{
         metrics.getDit(),
         metrics.getNoc(),
@@ -37,5 +37,33 @@ public class SingleClassAllMetrics {
         metrics.getNosi(),
         metrics.getLoc()
     };
+  }
+
+  /**
+   * 将类中的所有度量输出一行
+   * @param ps：用于输出的输出流
+   * @param spliter :度量数值之间的分隔符
+   * @return 返回传入的输出流，方便串联
+   */
+  PrintStream print(PrintStream ps,String spliter){
+    Integer[] res=getMetricsVal();
+    StringBuilder sb=new StringBuilder(res[0].toString());
+    for(int i=1;i<res.length;i++){
+      sb.append(spliter).append(res[i]);
+    }
+    ps.println(sb.toString());
+    return ps;
+  }
+  PrintStream print(PrintStream ps){
+    return print(ps,",");
+  }
+
+  public CKNumber getMetrics() {
+    return metrics;
+  }
+
+
+  public static String[] getMetricsName(){
+    return "dit,noc,wmc,cbo,lcom,rfc,nom,nopm,nosm,no,nopf,nosf,nosi,loc".split(",");
   }
 }
