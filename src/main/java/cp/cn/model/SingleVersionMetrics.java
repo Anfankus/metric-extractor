@@ -1,44 +1,76 @@
 package cp.cn.model;
 
 import com.github.mauricioaniche.ck.CKReport;
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * SingleVersionMetrics 对于单个版本的所有度量，实质是SingleClassAllMetrics的数组封装
  */
 public class SingleVersionMetrics {
+
   private String version;
   private String ProjectName;
   private SingleClassAllMetrics[] metrics;
 
-  public SingleVersionMetrics(SingleClassAllMetrics[] m){
-    metrics=m;
+  public SingleVersionMetrics(SingleClassAllMetrics[] m) {
+    metrics = m;
   }
-  public SingleVersionMetrics(CKReport re){
-    metrics=(SingleClassAllMetrics[])re.all().toArray();
+
+  public SingleVersionMetrics(CKReport re, String path) {
+    metrics = (SingleClassAllMetrics[]) re.all().toArray();
+    Matcher matcher = Pattern.compile("(\\w+?)-?((\\d+).(\\d+)(.(\\d+))?)$")
+        .matcher(new File(path).getName());
+    setProjectName(matcher.group(1));
+    setVersion(matcher.group(2));
   }
 
   /**
-   * @return 计算返回该版本各个度量值的总和,key为度量名称，value为度量值总和
+   * @return 计算返回该版本各个度量值的总和, key为度量名称，value为度量值总和
    */
-  public HashMap<String,Integer> getMetricsSum(){
-    HashMap<String,Integer> res=new HashMap<>();
-    String[] names=SingleClassAllMetrics.getMetricsName();
+  public HashMap<String, Integer> getMetricsSum() {
+    HashMap<String, Integer> res = new HashMap<>();
+    String[] names = SingleClassAllMetrics.getMetricsName();
     Arrays.stream(metrics)
-        .map(x->x.getMetricsVal())
-        .forEach(each->{
-          for(int i=0;i<each.length;i++){
-            res.put(names[i],res.containsKey(names[i])?0:res.get(names[i]));
+        .map(x -> x.getMetricsVal())
+        .forEach(each -> {
+          for (int i = 0; i < each.length; i++) {
+            res.put(names[i], res.containsKey(names[i]) ? 0 : res.get(names[i]));
           }
         });
     return res;
   }
 
 
+  /**
+   * 两个版本的版本号进行对比
+   *
+   * @param b 另一个版本的度量值，
+   * @return int 大于则返回正数，小于返回负数，同版本返回0
+   */
+  public int compareVersion(SingleVersionMetrics b) {
+    Pattern reg = Pattern.compile("(\\d+).(\\d+)(.(\\d+))?");
+    Matcher m1 = reg.matcher(version);
+    Matcher m2 = reg.matcher(b.getVersion());
+
+    int groupIndex[] = new int[]{1, 2, 4};
+    for (int i : groupIndex) {
+      int ver1 = Integer.parseInt(m1.group(i));
+      int ver2 = Integer.parseInt(m2.group(i));
+      if (ver1 != ver2) {
+        return ver1 - ver2;
+      }
+    }
+    return 0;
+  }
+
   public String getVersion() {
     return version;
   }
+
 
   public void setVersion(String version) {
     this.version = version;
