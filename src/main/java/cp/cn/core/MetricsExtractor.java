@@ -32,25 +32,37 @@ public class MetricsExtractor {
    * 计算度量值调用的方法，将给定的路径作为待测项目根目录，计算ck值
    *
    * @throws InvalidObjectException 输入路径不是一个目录时抛出异常
+   * @param s
    */
   public void doExtract(Consumer<MultiVersionMetrics> s) throws InvalidObjectException {
+    doExtract(s, false);
+  }
+
+  public void doExtract(Consumer<MultiVersionMetrics> s,boolean wait) throws InvalidObjectException {
     if (!checkPaths()) {
       throw new InvalidObjectException("输入路径不全是目录");
     }
     if (resultCached == null) {
-      new Thread(() -> {
+      var t=new Thread(() -> {
         MultiVersionMetrics metrics=new MultiVersionMetrics(
             directoryPaths.parallelStream()
             .map(path->new SingleVersionMetrics(new CK().calculate(path),path))
             .sorted((a,b)->a.compareVersion(b))
             .collect(Collectors.toList()) );
 
-        //todo 将计算所得数据进行预测模型
-        metrics.getChangeRate();
-        metrics.getRegression();
+        metrics.getChangeRate(true);
+        //metrics.getRegression();
         resultCached=metrics;
         s.accept(resultCached);
-      }).start();
+      });
+      t.start();
+      if(wait)
+        try{
+          t.join();
+        }
+        catch (Exception x){
+          x.printStackTrace();
+        }
     }
     else
       s.accept(resultCached);

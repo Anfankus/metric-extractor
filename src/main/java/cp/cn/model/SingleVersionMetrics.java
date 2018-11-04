@@ -3,9 +3,13 @@ package cp.cn.model;
 import com.github.mauricioaniche.ck.CKReport;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import javafx.print.Collation;
 
 /**
  * SingleVersionMetrics 对于单个版本的所有度量，实质是SingleClassAllMetrics的数组封装
@@ -14,16 +18,18 @@ public class SingleVersionMetrics {
 
   private String version;
   private String ProjectName;
-  private SingleClassAllMetrics[] metrics;
+  private List<SingleClassAllMetrics> metrics;
 
-  public SingleVersionMetrics(SingleClassAllMetrics[] m) {
+  public SingleVersionMetrics(List<SingleClassAllMetrics> m) {
     metrics = m;
   }
 
   public SingleVersionMetrics(CKReport re, String path) {
-    metrics = (SingleClassAllMetrics[]) re.all().toArray();
-    Matcher matcher = Pattern.compile("(\\w+?)-?((\\d+).(\\d+)(.(\\d+))?)$")
+    metrics = re.all().stream().map(each->new SingleClassAllMetrics(each)).collect(
+        Collectors.toList());
+    Matcher matcher = Pattern.compile("^(\\w+).*?(\\d+\\.\\d+(\\.\\d+)?)$")
         .matcher(new File(path).getName());
+    matcher.find();
     setProjectName(matcher.group(1));
     setVersion(matcher.group(2));
   }
@@ -34,7 +40,7 @@ public class SingleVersionMetrics {
   public HashMap<String, Integer> getMetricsSum() {
     HashMap<String, Integer> res = new HashMap<>();
     String[] names = SingleClassAllMetrics.getMetricsName();
-    Arrays.stream(metrics)
+    metrics.stream()
         .map(x -> x.getMetricsVal())
         .forEach(each -> {
           for (int i = 0; i < each.length; i++) {
@@ -56,6 +62,8 @@ public class SingleVersionMetrics {
     Matcher m1 = reg.matcher(version);
     Matcher m2 = reg.matcher(b.getVersion());
 
+    m1.find();
+    m2.find();
     int groupIndex[] = new int[]{1, 2, 4};
     for (int i : groupIndex) {
       int ver1 = Integer.parseInt(m1.group(i));
@@ -84,7 +92,7 @@ public class SingleVersionMetrics {
     ProjectName = projectName;
   }
 
-  public SingleClassAllMetrics[] getMetrics() {
+  public List<SingleClassAllMetrics> getMetrics() {
     return metrics;
   }
 

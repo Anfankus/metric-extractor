@@ -10,9 +10,11 @@ import java.io.PrintStream;
 
 
 public class SingleClassAllMetrics {
+  private String className;
   private CKNumber metrics;
   public SingleClassAllMetrics(CKNumber source){
     metrics=source;
+    className=metrics.getClassName();
   }
 
   /**
@@ -61,7 +63,9 @@ public class SingleClassAllMetrics {
   public CKNumber getMetrics() {
     return metrics;
   }
-
+  public String getClassName(){
+    return className;
+  }
 
   public static String[] getMetricsName(){
     return "dit,noc,wmc,cbo,lcom,rfc,nom,nopm,nosm,no,nopf,nosf,nosi,loc".split(",");

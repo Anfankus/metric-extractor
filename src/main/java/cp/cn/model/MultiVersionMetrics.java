@@ -1,9 +1,15 @@
 package cp.cn.model;
 
 
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import weka.core.matrix.LinearRegression;
+import java.util.Map;
+import weka.classifiers.functions.LinearRegression;
+import weka.core.Attribute;
+import weka.core.Instances;
+import weka.core.converters.ConverterUtils.DataSource;
 
 /**
  * 代表一个项目多个版本的所有度量值，包括计算后得到的各版本各类的度量值，各类的变化率和变化率的预测模型
@@ -11,39 +17,105 @@ import weka.core.matrix.LinearRegression;
 public class MultiVersionMetrics {
 
   private List<SingleVersionMetrics> metrics;
-  private HashMap<String,Double[]> changeRateCached;
-  private LinearRegression regressionCached;
+  private HashMap<String, ArrayList<Double>> changeRateCached;
+  private HashMap<String, LinearRegression> regressionsCached;//className:reg
 
-  public MultiVersionMetrics(List<SingleVersionMetrics> source){
-    metrics=source;
-    changeRateCached=null;
-    regressionCached=null;
+  public MultiVersionMetrics(List<SingleVersionMetrics> source) {
+    metrics = source;
+    changeRateCached = null;
+    regressionsCached = null;
   }
 
+  public HashMap<String, ArrayList<Double>> getChangeRate() {
+    return getChangeRate(false);
+  }
   /**
-   * TODO 将 metrics 中的度量值，计算每个类在多个版本过程中的变化率（结合此类所有度量值）
    * @return 以类为key，变化率为value的Map
+   * @param outputfile 是否输出为文件，输出目录为项目根目录
    */
-  public HashMap<String,Double[]> getChangeRate(){
-    if(changeRateCached ==null){
-      HashMap<String,Double> res=new HashMap<>();
 
+  public HashMap<String, ArrayList<Double>> getChangeRate(boolean outputfile) {
+    if (changeRateCached == null) {
+      HashMap<String, ArrayList<Double>> res = new HashMap<>();
 
+      //className:metrics
+      HashMap<String, SingleClassAllMetrics> valuesForEachClass = new HashMap<>();
+      metrics.forEach(eachVersion -> {
+        //每个版本
+        for (SingleClassAllMetrics eachClass : eachVersion.getMetrics()) {
+          //单个版本每个类
+          if (valuesForEachClass.containsKey(eachClass.getClassName())) {
+            SingleClassAllMetrics last = valuesForEachClass.get(eachClass.getClassName());
+            Integer[] lastVal = last.getMetricsVal();
+            Integer[] currentVal = eachClass.getMetricsVal();
 
+            double rateSum = 0.0;
+            for (int i = 1; i < lastVal.length; i++) {
+              if(lastVal[i]==0)
+                rateSum+=1;
+              else
+                rateSum += (currentVal[i] - lastVal[i]) / lastVal[i];
+            }
+            double avgRate = rateSum / (lastVal.length - 1);
+
+            if (res.containsKey(eachClass.getClassName())) {
+              res.get(eachClass.getClassName()).add(avgRate);
+            } else {
+              ArrayList<Double> ay = new ArrayList<>();
+              ay.add(avgRate);
+              res.put(eachClass.getClassName(), ay);
+            }
+          }
+          valuesForEachClass.put(eachClass.getClassName(), eachClass);
+        }
+      });
+      changeRateCached=res;
     }
+    if (outputfile) {
+      try {
+        PrintWriter ps = new PrintWriter("temp.csv");
+        changeRateCached.forEach((k, v) ->{
+          StringBuilder everyRow=new StringBuilder(k);
+          v.forEach(each->everyRow.append(',').append(String.format("%.4f",each)));
+          ps.println(everyRow);
+        });
+        ps.close();
+      } catch (Exception x) {
+        assert false;
+      }
+    }
+
     return changeRateCached;
   }
 
   /**
-   * TODO 使用 changeRateCached 以计算得到的数据生成线性模型
+   * TODO 使用 changeRateCached 以计算得到的数据生成线性模型,每一个类生成一个预测函数
+   *
    * @return 计算完成的线性模型
    */
-  public LinearRegression getRegression(){
-    if(regressionCached==null){
-      HashMap<String,Double[]> changeRate=getChangeRate();
+  public synchronized Map<String, LinearRegression> getRegression(){
+    if (regressionsCached == null || regressionsCached.isEmpty()) {
 
+      HashMap<String, ArrayList<Double>> changeRate = getChangeRate();
+      changeRate.forEach((k,v)->{
+      try {
+        ArrayList<Attribute> attrs=new ArrayList<>();
+        attrs.add(new Attribute(""));
+
+
+
+        Instances dataset = DataSource.read("temp.csv");
+        dataset.setClassIndex(dataset.numAttributes() - 1);
+
+        LinearRegression linearRegression = new LinearRegression();
+        linearRegression.buildClassifier(dataset);
+
+        regressionsCached.put(k,linearRegression);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }});
     }
-    return regressionCached;
+    return regressionsCached;
   }
 
 }
