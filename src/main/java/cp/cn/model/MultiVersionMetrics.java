@@ -16,6 +16,14 @@ import weka.core.converters.ConverterUtils.DataSource;
  */
 public class MultiVersionMetrics {
 
+  public List<SingleVersionMetrics> getMetrics() {
+    return metrics;
+  }
+
+  public void setMetrics(List<SingleVersionMetrics> metrics) {
+    this.metrics = metrics;
+  }
+
   private List<SingleVersionMetrics> metrics;
   private HashMap<String, ArrayList<Double>> changeRateCached;
   private HashMap<String, LinearRegression> regressionsCached;//className:reg
