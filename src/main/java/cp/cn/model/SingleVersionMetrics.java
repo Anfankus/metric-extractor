@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javafx.print.Collation;
 
 /**
  * SingleVersionMetrics 对于单个版本的所有度量，实质是SingleClassAllMetrics的数组封装

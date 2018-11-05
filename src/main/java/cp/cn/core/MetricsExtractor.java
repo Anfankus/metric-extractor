@@ -43,7 +43,7 @@ public class MetricsExtractor {
       throw new InvalidObjectException("输入路径不全是目录");
     }
     if (resultCached == null) {
-      var t=new Thread(() -> {
+      Thread t=new Thread(() -> {
         MultiVersionMetrics metrics=new MultiVersionMetrics(
             directoryPaths.parallelStream()
             .map(path->new SingleVersionMetrics(new CK().calculate(path),path))

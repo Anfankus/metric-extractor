@@ -1,5 +1,9 @@
+
+
 import cp.cn.core.MetricsExtractor;
 import cp.cn.model.MultiVersionMetrics;
+
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +37,7 @@ public class TestModel {
   @Test
   public void t1(){
     String a1="^(\\w+).*?(\\d+\\.\\d+(\\.\\d+)?)$";
-    var x=Pattern.compile(a1).matcher("pro1-3.4.5");
+    Matcher x=Pattern.compile(a1).matcher("pro1-3.4.5");
     x.find();
     System.out.println(x);
   }
