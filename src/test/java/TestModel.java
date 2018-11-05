@@ -21,7 +21,12 @@ public class TestModel {
   public void testMultiVersions()throws Exception{
     MetricsExtractor m=new MetricsExtractor(paths);
     m.doExtract(x->{
-
+      try{
+        x.print2Direcory("tempoutput");
+      }
+      catch (Exception ex){
+        ex.printStackTrace();
+      }
     },true);
   }
 

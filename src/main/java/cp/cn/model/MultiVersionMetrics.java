@@ -1,6 +1,7 @@
 package cp.cn.model;
 
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import weka.classifiers.functions.LinearRegression;
 import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 
@@ -49,14 +52,24 @@ public class MultiVersionMetrics {
             Integer[] lastVal = last.getMetricsVal();
             Integer[] currentVal = eachClass.getMetricsVal();
 
-            double rateSum = 0.0;
+//            double rateSum = 0.0;
+//            for (int i = 1; i < lastVal.length; i++) {
+//              if(lastVal[i]==0)
+//                rateSum+=1;
+//              else
+//                rateSum += (double)Math.abs(currentVal[i] - lastVal[i])/ lastVal[i];
+//            }
+//            double avgRate = rateSum / (lastVal.length - 1);
+
+
+            int changeValSum = 0;
+            int lastSum=0;
             for (int i = 1; i < lastVal.length; i++) {
-              if(lastVal[i]==0)
-                rateSum+=1;
-              else
-                rateSum += (currentVal[i] - lastVal[i]) / lastVal[i];
+              lastSum+=lastVal[i];
+              changeValSum += Math.abs(currentVal[i] - lastVal[i]);
             }
-            double avgRate = rateSum / (lastVal.length - 1);
+            double avgRate = (double)changeValSum /lastSum;
+
 
             if (res.containsKey(eachClass.getClassName())) {
               res.get(eachClass.getClassName()).add(avgRate);
@@ -73,7 +86,7 @@ public class MultiVersionMetrics {
     }
     if (outputfile) {
       try {
-        PrintWriter ps = new PrintWriter("temp.csv");
+        PrintWriter ps = new PrintWriter("changeRate.csv");
         changeRateCached.forEach((k, v) ->{
           StringBuilder everyRow=new StringBuilder(k);
           v.forEach(each->everyRow.append(',').append(String.format("%.4f",each)));
@@ -102,7 +115,7 @@ public class MultiVersionMetrics {
         ArrayList<Attribute> attrs=new ArrayList<>();
         attrs.add(new Attribute(""));
 
-
+        Instances ins=new Instances("ins",attrs,0);
 
         Instances dataset = DataSource.read("temp.csv");
         dataset.setClassIndex(dataset.numAttributes() - 1);
@@ -116,6 +129,15 @@ public class MultiVersionMetrics {
       }});
     }
     return regressionsCached;
+  }
+  public void print2Direcory(String rootPath)throws Exception{
+    File f=new File(rootPath);
+    if(!(f.exists()&&f.isDirectory()))
+      f.mkdir();
+    for(SingleVersionMetrics eachVer:metrics){
+      String path=rootPath+"/"+eachVer.getProjectName()+" "+eachVer.getVersion()+".csv";
+      eachVer.printFile(path);
+    }
   }
 
 }

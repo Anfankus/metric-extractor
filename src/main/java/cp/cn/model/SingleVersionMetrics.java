@@ -2,6 +2,8 @@ package cp.cn.model;
 
 import com.github.mauricioaniche.ck.CKReport;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,12 +21,14 @@ public class SingleVersionMetrics {
   private String version;
   private String ProjectName;
   private List<SingleClassAllMetrics> metrics;
+  private CKReport _source;
 
   public SingleVersionMetrics(List<SingleClassAllMetrics> m) {
     metrics = m;
   }
 
   public SingleVersionMetrics(CKReport re, String path) {
+    _source=re;
     metrics = re.all().stream().map(each->new SingleClassAllMetrics(each)).collect(
         Collectors.toList());
     Matcher matcher = Pattern.compile("^(\\w+).*?(\\d+\\.\\d+(\\.\\d+)?)$")
@@ -96,5 +100,11 @@ public class SingleVersionMetrics {
     return metrics;
   }
 
-
+  public void printFile(String filepath)throws Exception{
+    PrintWriter pw=new PrintWriter(new FileWriter(filepath,true));
+    for(SingleClassAllMetrics each:getMetrics()){
+      each.println(pw);
+    }
+    pw.close();
+  }
 }

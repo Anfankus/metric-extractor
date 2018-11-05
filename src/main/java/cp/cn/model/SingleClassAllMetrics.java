@@ -2,6 +2,7 @@ package cp.cn.model;
 
 import com.github.mauricioaniche.ck.CKNumber;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 
 /**
  * SingleClassAllMetrics 表示单一类的所有度量值，ck包中CKNumber类的封装，
@@ -47,7 +48,7 @@ public class SingleClassAllMetrics {
    * @param spliter :度量数值之间的分隔符
    * @return 返回传入的输出流，方便串联
    */
-  PrintStream print(PrintStream ps,String spliter){
+  PrintWriter println(PrintWriter ps,String spliter){
     Integer[] res=getMetricsVal();
     StringBuilder sb=new StringBuilder(res[0].toString());
     for(int i=1;i<res.length;i++){
@@ -56,8 +57,8 @@ public class SingleClassAllMetrics {
     ps.println(sb.toString());
     return ps;
   }
-  PrintStream print(PrintStream ps){
-    return print(ps,",");
+  PrintWriter println(PrintWriter ps){
+    return println(ps,",");
   }
 
   public CKNumber getMetrics() {
