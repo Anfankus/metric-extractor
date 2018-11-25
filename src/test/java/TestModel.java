@@ -1,8 +1,9 @@
 
 
-import cp.cn.core.MetricsExtractor;
-import cp.cn.model.MultiVersionMetrics;
+import cn.cp.controller.MetricsExtractor;
 
+import gumtree.spoon.AstComparator;
+import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.Before;
@@ -40,5 +41,14 @@ public class TestModel {
     Matcher x=Pattern.compile(a1).matcher("pro1-3.4.5");
     x.find();
     System.out.println(x);
+  }
+
+  @Test
+  public void vif() throws Exception {
+    String file1 = "E:\\IDEAProject\\demo\\junit4-r4.6\\src\\main\\java\\org\\junit\\runner\\Description.java";
+    String file2 = "E:\\IDEAProject\\demo\\junit4-r4.8\\src\\main\\java\\org\\junit\\runner\\Description.java";
+
+    new AstComparator().compare(new File(file1), new File(file2));
+
   }
 }

@@ -1,4 +1,4 @@
-package cp.cn.model;
+package cn.cp.model;
 
 
 import java.io.File;
@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import weka.classifiers.functions.LinearRegression;
 import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 
@@ -36,15 +34,10 @@ public class MultiVersionMetrics {
     changeRateCached = null;
     regressionsCached = null;
   }
-
-  public HashMap<String, ArrayList<Double>> getChangeRate() {
-    return getChangeRate(false);
-  }
   /**
    * @return 以类为key，变化率为value的Map
    * @param outputfile 是否输出为文件，输出目录为项目根目录
    */
-
   public HashMap<String, ArrayList<Double>> getChangeRate(boolean outputfile) {
     if (changeRateCached == null) {
       HashMap<String, ArrayList<Double>> res = new HashMap<>();
@@ -108,6 +101,12 @@ public class MultiVersionMetrics {
 
     return changeRateCached;
   }
+
+  public HashMap<String, ArrayList<Double>> getChangeRate() {
+    return getChangeRate(false);
+  }
+
+
 
   /**
    * TODO 使用 changeRateCached 以计算得到的数据生成线性模型,每一个类生成一个预测函数

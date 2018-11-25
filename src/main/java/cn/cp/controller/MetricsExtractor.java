@@ -1,14 +1,13 @@
-package cp.cn.core;
+package cn.cp.controller;
 
+import cn.cp.model.MultiVersionMetrics;
 import com.github.mauricioaniche.ck.CK;
-import cp.cn.model.MultiVersionMetrics;
-import cp.cn.model.SingleVersionMetrics;
+import cn.cp.model.SingleVersionMetrics;
 import java.io.File;
 import java.io.InvalidObjectException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -38,17 +37,34 @@ public class MetricsExtractor {
     doExtract(s, false);
   }
 
-  public void doExtract(Consumer<MultiVersionMetrics> s,boolean wait) throws InvalidObjectException {
+  public void doExtract(Consumer<MultiVersionMetrics> s, boolean wait)
+      throws InvalidObjectException {
     if (!checkPaths()) {
       throw new InvalidObjectException("输入路径不全是目录");
     }
     if (resultCached == null) {
       Thread t=new Thread(() -> {
+        //提取每个类度量值
         MultiVersionMetrics metrics=new MultiVersionMetrics(
             directoryPaths.parallelStream()
             .map(path->new SingleVersionMetrics(new CK().calculate(path),path))
             .sorted((a,b)->a.compareVersion(b))
-            .collect(Collectors.toList()) );
+                .collect(Collectors.toList())
+        );
+
+        //TODO 补全代码
+        //计算两两版本变化
+        try {
+          for (int i = 1; i < directoryPaths.size(); i++) {
+            TwoVersComparator comparator = new TwoVersComparator();
+            comparator
+                .compare(new File(directoryPaths.get(i - 1)), new File(directoryPaths.get(i)));
+            comparator.getDiffs();
+
+          }
+        } catch (Exception x) {
+          System.out.println("版本对比异常");
+        }
 
         metrics.getChangeRate(true);
         //metrics.getRegression();
@@ -67,6 +83,7 @@ public class MetricsExtractor {
     else
       s.accept(resultCached);
   }
+
 
   public boolean checkPaths(){
     return directoryPaths.stream().allMatch(path->new File(path).isDirectory());

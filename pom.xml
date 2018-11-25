@@ -21,7 +21,21 @@
     </build>
 
     <dependencies>
-    <!-- https://mvnrepository.com/artifact/org.jfree/jfreechart -->
+      <!-- https://mvnrepository.com/artifact/com.github.gumtreediff/core -->
+      <dependency>
+        <groupId>com.github.gumtreediff</groupId>
+        <artifactId>core</artifactId>
+        <version>2.1.0</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/fr.inria.gforge.spoon/spoon-core -->
+      <dependency>
+        <groupId>fr.inria.gforge.spoon</groupId>
+        <artifactId>spoon-core</artifactId>
+        <version>7.1.0</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/org.jfree/jfreechart -->
     <dependency>
       <groupId>org.jfree</groupId>
       <artifactId>jfreechart</artifactId>

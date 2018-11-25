@@ -1,4 +1,4 @@
-package cp.cn.model;
+package cn.cp.model;
 
 import com.github.mauricioaniche.ck.CKNumber;
 import java.io.PrintStream;
@@ -13,6 +13,8 @@ import java.io.PrintWriter;
 public class SingleClassAllMetrics {
   private String className;
   private CKNumber metrics;
+  private Boolean ischanged;
+  private Integer changeValue;
   public SingleClassAllMetrics(CKNumber source){
     metrics=source;
     className=metrics.getClassName();
@@ -54,6 +56,7 @@ public class SingleClassAllMetrics {
     for(int i=1;i<res.length;i++){
       sb.append(spliter).append(res[i]);
     }
+    sb.append(spliter).append(ischanged);
     ps.println(sb.toString());
     return ps;
   }
@@ -68,6 +71,14 @@ public class SingleClassAllMetrics {
     return className;
   }
 
+  public void setChange(int val, boolean change) {
+    changeValue = val;
+    ischanged = change;
+  }
+
+  public Object[] getChange() {
+    return new Object[]{ischanged, changeValue};
+  }
   public static String[] getMetricsName(){
     return "dit,noc,wmc,cbo,lcom,rfc,nom,nopm,nosm,no,nopf,nosf,nosi,loc".split(",");
   }

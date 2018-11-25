@@ -1,11 +1,9 @@
-package cp.cn.model;
+package cn.cp.model;
 
 import com.github.mauricioaniche.ck.CKReport;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -19,19 +17,17 @@ public class SingleVersionMetrics {
 
   private String version;
   private String ProjectName;
+  private String fileName;
   private List<SingleClassAllMetrics> metrics;
   private CKReport _source;
 
-  public SingleVersionMetrics(List<SingleClassAllMetrics> m) {
-    metrics = m;
-  }
-
   public SingleVersionMetrics(CKReport re, String path) {
+    fileName = new File(path).getName();
     _source=re;
     metrics = re.all().stream().map(each->new SingleClassAllMetrics(each)).collect(
         Collectors.toList());
     Matcher matcher = Pattern.compile("^(\\w+).*?(\\d+\\.\\d+(\\.\\d+)?)$")
-        .matcher(new File(path).getName());
+        .matcher(fileName);
     matcher.find();
     setProjectName(matcher.group(1));
     setVersion(matcher.group(2));

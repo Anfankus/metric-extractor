@@ -1,5 +1,6 @@
-package cp.cn;
-import cp.cn.core.MetricsExtractor;
+package cn.cp;
+
+import cn.cp.controller.MetricsExtractor;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CategoryPlot;
@@ -24,8 +25,6 @@ import javax.swing.*;
 import javax.swing.filechooser.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.*;
-import cp.cn.core.MetricsExtractor;
-import cp.cn.model.MultiVersionMetrics;
 
 public class UI extends JFrame{
     private JTextArea textArea1;

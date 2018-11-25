@@ -146,3 +146,9 @@ fabric.properties
 .idea/
 *.iml
 tempoutput/
+.DS_Store
+node_modules/
+dist/
+package-lock.json
+npm-debug.log
+yarn-error.log
