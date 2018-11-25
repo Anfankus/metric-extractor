@@ -79,8 +79,9 @@ public class TwoVersComparator extends AstComparator {
     comparator.compare(file1, file2);
     HashMap<String, Diff> map = comparator.getDiffs();
 
+    int i = 1;
     for (Map.Entry<String, Diff> each : map.entrySet()) {
-      System.out.println(each.getKey() + ":" + each.getValue().getRootOperations().size());
+      System.out.println((i++) + each.getKey() + ":" + each.getValue().getRootOperations().size());
     }
     System.out.println("----------------------------------");
     System.out.println("add:" + comparator.getAdd());

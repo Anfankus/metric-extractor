@@ -1,12 +1,15 @@
 package cn.cp.model;
 
 
+import cn.cp.controller.TwoVersComparator;
+import gumtree.spoon.diff.Diff;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import weka.classifiers.functions.LinearRegression;
 import weka.core.Attribute;
 import weka.core.Instances;
@@ -46,7 +49,7 @@ public class MultiVersionMetrics {
       HashMap<String, SingleClassAllMetrics> valuesForEachClass = new HashMap<>();
       metrics.forEach(eachVersion -> {
         //每个版本
-        for (SingleClassAllMetrics eachClass : eachVersion.getMetrics()) {
+        for (SingleClassAllMetrics eachClass : eachVersion.getMetrics().values()) {
           //单个版本每个类
           if (valuesForEachClass.containsKey(eachClass.getClassName())) {
             SingleClassAllMetrics last = valuesForEachClass.get(eachClass.getClassName());
@@ -136,6 +139,40 @@ public class MultiVersionMetrics {
       }});
     }
     return regressionsCached;
+  }
+
+
+  /**
+   * 两两计算版本变化与否，最后一个版本不计算
+   */
+  public void getChangeValue() throws Exception {
+    for (int i = 1; i < metrics.size(); i++) {
+      SingleVersionMetrics currentVer = getMetrics().get(i - 1),
+          behindVer = getMetrics().get(i);
+
+      TwoVersComparator comparator = new TwoVersComparator();
+      comparator.compare(new File(currentVer._filePath), new File(behindVer._filePath));
+      HashMap<String, Diff> diffs = comparator.getDiffs();
+
+      //计算中位数
+      List<Diff> sortedVal = diffs.values()
+          .stream()
+          .sorted((a, b) -> a.getRootOperations().size() - b.getRootOperations().size())
+          .collect(Collectors.toList());
+      int midVal = sortedVal.get(sortedVal.size() / 2).getRootOperations().size();
+
+      //将变更值放入相应的类
+      for (Map.Entry<String, Diff> each : diffs.entrySet()) {
+        String currentClassName = each.getKey();
+        int changeVal = each.getValue().getRootOperations().size();
+        SingleClassAllMetrics currentClass = currentVer.getMetrics().get(currentClassName);
+        if (currentClass != null) {
+          currentClass.setChange(changeVal, changeVal >= midVal);
+        } else {
+          System.out.println("类未找到:" + currentClassName);
+        }
+      }//end for
+    }//end for
   }
   public void print2Direcory(String rootPath)throws Exception{
     File f=new File(rootPath);

@@ -4,8 +4,10 @@ import com.github.mauricioaniche.ck.CKReport;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -18,14 +20,19 @@ public class SingleVersionMetrics {
   private String version;
   private String ProjectName;
   private String fileName;
-  private List<SingleClassAllMetrics> metrics;
+  private HashMap<String, SingleClassAllMetrics> metrics;
   private CKReport _source;
+  public String _filePath;
 
   public SingleVersionMetrics(CKReport re, String path) {
+    _filePath = path;
     fileName = new File(path).getName();
     _source=re;
-    metrics = re.all().stream().map(each->new SingleClassAllMetrics(each)).collect(
-        Collectors.toList());
+    metrics = (HashMap<String, SingleClassAllMetrics>) re
+        .all()
+        .stream()
+        .map(each -> new SingleClassAllMetrics(each))
+        .collect(Collectors.toMap(SingleClassAllMetrics::getClassName, x -> x));
     Matcher matcher = Pattern.compile("^(\\w+).*?(\\d+\\.\\d+(\\.\\d+)?)$")
         .matcher(fileName);
     matcher.find();
@@ -39,10 +46,11 @@ public class SingleVersionMetrics {
   public HashMap<String, Integer> getMetricsSum() {
     HashMap<String, Integer> res = new HashMap<>();
     String[] names = SingleClassAllMetrics.getMetricsName();
-    metrics.stream()
+    metrics.values()
+        .stream()
         .map(x -> x.getMetricsVal())
         .forEach(each -> {
-          for (int i = 0; i < each.length; i++) {
+          for (int i = 1; i < each.length - 1; i++) {
             res.put(names[i], res.containsKey(names[i]) ? 0 : res.get(names[i]));
           }
         });
@@ -91,13 +99,14 @@ public class SingleVersionMetrics {
     ProjectName = projectName;
   }
 
-  public List<SingleClassAllMetrics> getMetrics() {
+  public Map<String, SingleClassAllMetrics> getMetrics() {
     return metrics;
   }
 
   public void printFile(String filepath)throws Exception{
     PrintWriter pw=new PrintWriter(new FileWriter(filepath,true));
-    for(SingleClassAllMetrics each:getMetrics()){
+    pw.println(String.join(",", SingleClassAllMetrics.getMetricsName()));
+    for (SingleClassAllMetrics each : getMetrics().values()) {
       each.println(pw);
     }
     pw.close();

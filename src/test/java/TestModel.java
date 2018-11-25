@@ -36,14 +36,6 @@ public class TestModel {
   }
 
   @Test
-  public void t1(){
-    String a1="^(\\w+).*?(\\d+\\.\\d+(\\.\\d+)?)$";
-    Matcher x=Pattern.compile(a1).matcher("pro1-3.4.5");
-    x.find();
-    System.out.println(x);
-  }
-
-  @Test
   public void vif() throws Exception {
     String file1 = "E:\\IDEAProject\\demo\\junit4-r4.6\\src\\main\\java\\org\\junit\\runner\\Description.java";
     String file2 = "E:\\IDEAProject\\demo\\junit4-r4.8\\src\\main\\java\\org\\junit\\runner\\Description.java";

@@ -51,13 +51,16 @@ public class SingleClassAllMetrics {
    * @return 返回传入的输出流，方便串联
    */
   PrintWriter println(PrintWriter ps,String spliter){
-    Integer[] res=getMetricsVal();
-    StringBuilder sb=new StringBuilder(res[0].toString());
-    for(int i=1;i<res.length;i++){
-      sb.append(spliter).append(res[i]);
+
+    if (changeValue != null) {
+      Integer[] res = getMetricsVal();
+      StringBuilder sb = new StringBuilder(className);
+      for (int i = 0; i < res.length; i++) {
+        sb.append(spliter).append(res[i]);
+      }
+      sb.append(spliter).append(ischanged);
+      ps.println(sb.toString());
     }
-    sb.append(spliter).append(ischanged);
-    ps.println(sb.toString());
     return ps;
   }
   PrintWriter println(PrintWriter ps){
@@ -80,6 +83,7 @@ public class SingleClassAllMetrics {
     return new Object[]{ischanged, changeValue};
   }
   public static String[] getMetricsName(){
-    return "dit,noc,wmc,cbo,lcom,rfc,nom,nopm,nosm,no,nopf,nosf,nosi,loc".split(",");
+    return "classname,dit,noc,wmc,cbo,lcom,rfc,nom,nopm,nosm,no,nopf,nosf,nosi,loc,ischanged"
+        .split(",");
   }
 }
