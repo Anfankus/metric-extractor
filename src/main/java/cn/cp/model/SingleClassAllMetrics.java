@@ -1,7 +1,6 @@
 package cn.cp.model;
 
-import com.github.mauricioaniche.ck.CKNumber;
-import java.io.PrintStream;
+import com.github.mauricioaniche.ck.MetricValue;
 import java.io.PrintWriter;
 
 /**
@@ -12,12 +11,16 @@ import java.io.PrintWriter;
 
 public class SingleClassAllMetrics {
   private String className;
-  private CKNumber metrics;
+  private MetricValue metrics;
   private Boolean ischanged;
   private Integer changeValue;
-  public SingleClassAllMetrics(CKNumber source){
+
+  public SingleClassAllMetrics(MetricValue source) {
     metrics=source;
-    className=metrics.getClassName();
+    className = metrics.getFullyQualifiedClassName();
+    if (className.equalsIgnoreCase("org.junit.AfterClass")) {
+      System.out.println();
+    }
   }
 
   /**
@@ -67,7 +70,7 @@ public class SingleClassAllMetrics {
     return println(ps,",");
   }
 
-  public CKNumber getMetrics() {
+  public MetricValue getMetrics() {
     return metrics;
   }
   public String getClassName(){

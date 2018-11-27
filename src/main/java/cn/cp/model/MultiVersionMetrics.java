@@ -146,12 +146,14 @@ public class MultiVersionMetrics {
    * 两两计算版本变化与否，最后一个版本不计算
    */
   public void getChangeValue() throws Exception {
+
+    //逐版本遍历
     for (int i = 1; i < metrics.size(); i++) {
       SingleVersionMetrics currentVer = getMetrics().get(i - 1),
           behindVer = getMetrics().get(i);
 
       TwoVersComparator comparator = new TwoVersComparator();
-      comparator.compare(new File(currentVer._filePath), new File(behindVer._filePath));
+      comparator.compare(new File(currentVer.originFilePath), new File(behindVer.originFilePath));
       HashMap<String, Diff> diffs = comparator.getDiffs();
 
       //计算中位数
@@ -167,9 +169,9 @@ public class MultiVersionMetrics {
         int changeVal = each.getValue().getRootOperations().size();
         SingleClassAllMetrics currentClass = currentVer.getMetrics().get(currentClassName);
         if (currentClass != null) {
-          currentClass.setChange(changeVal, changeVal >= midVal);
+          currentClass.setChange(changeVal, changeVal > midVal);
         } else {
-          System.out.println("类未找到:" + currentClassName);
+          System.out.println("类未找到:" + currentClassName + currentVer.getVersion());
         }
       }//end for
     }//end for

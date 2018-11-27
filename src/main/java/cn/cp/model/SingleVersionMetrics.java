@@ -1,12 +1,10 @@
 package cn.cp.model;
 
-import com.github.mauricioaniche.ck.CKReport;
+import com.github.mauricioaniche.ck.MetricReport;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,15 +19,15 @@ public class SingleVersionMetrics {
   private String ProjectName;
   private String fileName;
   private HashMap<String, SingleClassAllMetrics> metrics;
-  private CKReport _source;
-  public String _filePath;
+  private MetricReport _source;
+  public String originFilePath;
 
-  public SingleVersionMetrics(CKReport re, String path) {
-    _filePath = path;
+  public SingleVersionMetrics(MetricReport re, String path) {
+    originFilePath = path;
     fileName = new File(path).getName();
     _source=re;
     metrics = (HashMap<String, SingleClassAllMetrics>) re
-        .all()
+        .getCKMetrics()
         .stream()
         .map(each -> new SingleClassAllMetrics(each))
         .collect(Collectors.toMap(SingleClassAllMetrics::getClassName, x -> x));
