@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.Before;
 import org.junit.Test;
+import weka.classifiers.functions.Logistic;
 
 public class TestModel {
   String[] paths;
@@ -27,7 +28,11 @@ public class TestModel {
     MetricsExtractor m=new MetricsExtractor(paths);
     m.doExtract(x->{
       try{
-        x.print2Direcory("tempoutput");
+        x.getMetrics().print2Direcory("tempoutput");
+
+        Logistic logistic = x.getRegression("tempoutput/junit4 4.6.csv");
+
+
       }
       catch (Exception ex){
         ex.printStackTrace();
@@ -42,5 +47,11 @@ public class TestModel {
 
     new AstComparator().compare(new File(file1), new File(file2));
 
+  }
+
+  @Test
+  public void modelTest() throws Exception {
+    MetricsExtractor x = new MetricsExtractor(new String[]{});
+    Logistic log = x.getRegression("tempoutput/junit4 4.8.csv");
   }
 }

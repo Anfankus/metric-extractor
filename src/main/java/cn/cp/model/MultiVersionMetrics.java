@@ -30,12 +30,10 @@ public class MultiVersionMetrics {
 
   private List<SingleVersionMetrics> metrics;
   private HashMap<String, ArrayList<Double>> changeRateCached;
-  private HashMap<String, LinearRegression> regressionsCached;//className:reg
 
   public MultiVersionMetrics(List<SingleVersionMetrics> source) {
     metrics = source;
     changeRateCached = null;
-    regressionsCached = null;
   }
   /**
    * @return 以类为key，变化率为value的Map
@@ -110,38 +108,6 @@ public class MultiVersionMetrics {
   }
 
 
-
-  /**
-   * TODO 使用 changeRateCached 以计算得到的数据生成线性模型,每一个类生成一个预测函数
-   *
-   * @return 计算完成的线性模型
-   */
-  public synchronized Map<String, LinearRegression> getRegression(){
-    if (regressionsCached == null || regressionsCached.isEmpty()) {
-
-      HashMap<String, ArrayList<Double>> changeRate = getChangeRate();
-      changeRate.forEach((k,v)->{
-      try {
-        ArrayList<Attribute> attrs=new ArrayList<>();
-        attrs.add(new Attribute(""));
-
-        Instances ins=new Instances("ins",attrs,0);
-
-        Instances dataset = DataSource.read("temp.csv");
-        dataset.setClassIndex(dataset.numAttributes() - 1);
-
-        LinearRegression linearRegression = new LinearRegression();
-        linearRegression.buildClassifier(dataset);
-
-        regressionsCached.put(k,linearRegression);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }});
-    }
-    return regressionsCached;
-  }
-
-
   /**
    * 两两计算版本变化与否，最后一个版本不计算
    */
@@ -167,7 +133,7 @@ public class MultiVersionMetrics {
         int changeVal = each.getValue().getRootOperations().size();
         SingleClassAllMetrics currentClass = currentVer.getMetrics().get(currentClassName);
         if (currentClass != null) {
-          currentClass.setChange(changeVal, changeVal >= midVal);
+          currentClass.setChange(changeVal, changeVal > midVal);
         } else {
           System.out.println("类未找到:" + currentClassName);
         }
