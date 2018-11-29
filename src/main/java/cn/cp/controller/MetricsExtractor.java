@@ -83,25 +83,6 @@ public class MetricsExtractor {
     instances.setClassIndex(instances.numAttributes() - 1);
     Logistic logic = new Logistic();
     logic.buildClassifier(instances);
-
-    /*
-     * 测试用
-     */
-    Instances test = new DataSource("tempoutput/junit4 4.11.csv").getDataSet();
-    test.setClassIndex(test.numAttributes() - 1);
-    /*
-
-     */
-    int a = 0;
-    int b = 0;
-    for (Instance i : test) {
-      if (logic.classifyInstance(i) == i.classValue()) {
-        a++;
-      }
-      b++;
-    }
-
-    System.out.println(a * 1.0 / b);
     return logic;
   }
 
