@@ -2,7 +2,7 @@ package cn.cp.controller;
 
 import cn.cp.model.MultiVersionMetrics;
 import cn.cp.model.SingleVersionMetrics;
-import com.github.mauricioaniche.ck.CK;
+import com.github.mauricioaniche.ck.JavaMetricExtractor;
 import java.io.File;
 import java.io.InvalidObjectException;
 import java.util.Arrays;
@@ -50,7 +50,8 @@ public class MetricsExtractor {
         //提取所有版本度量值
         MultiVersionMetrics metrics = new MultiVersionMetrics(
             directoryPaths.stream()
-                .map(path -> new SingleVersionMetrics(new CK().calculate(path), path))
+                .map(
+                    path -> new SingleVersionMetrics(new JavaMetricExtractor(path).process(), path))
                 .sorted((a, b) -> a.compareVersion(b))
                 .collect(Collectors.toList())
         );
