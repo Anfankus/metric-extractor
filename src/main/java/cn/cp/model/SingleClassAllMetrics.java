@@ -57,8 +57,11 @@ public class SingleClassAllMetrics {
 
     if (changeValue != null) {
       Integer[] res = getMetricsVal();
-      StringBuilder sb = new StringBuilder(className);
-      for (int i = 0; i < res.length; i++) {
+      //StringBuilder sb = new StringBuilder(className);
+      StringBuilder sb = new StringBuilder();
+
+      sb.append(res[0]);
+      for (int i = 1; i < res.length; i++) {
         sb.append(spliter).append(res[i]);
       }
       sb.append(spliter).append(ischanged);
@@ -86,7 +89,7 @@ public class SingleClassAllMetrics {
     return new Object[]{ischanged, changeValue};
   }
   public static String[] getMetricsName(){
-    return "classname,dit,noc,wmc,cbo,lcom,rfc,nom,nopm,nosm,no,nopf,nosf,nosi,loc,ischanged"
+    return "dit,noc,wmc,cbo,lcom,rfc,nom,nopm,nosm,no,nopf,nosf,nosi,loc,ischanged"
         .split(",");
   }
 }

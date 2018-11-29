@@ -1,19 +1,19 @@
 package cn.cp.controller;
 
 import cn.cp.model.MultiVersionMetrics;
-import cn.cp.model.SingleClassAllMetrics;
 import cn.cp.model.SingleVersionMetrics;
-import com.github.mauricioaniche.ck.JavaMetricExtractor;
-import gumtree.spoon.diff.Diff;
+import com.github.mauricioaniche.ck.CK;
 import java.io.File;
 import java.io.InvalidObjectException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import weka.classifiers.functions.Logistic;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.converters.ConverterUtils.DataSource;
 
 /**
  * 为进行度量计算而实例化的类，其他模块在计算度量值时实际用到的类
@@ -36,11 +36,11 @@ public class MetricsExtractor {
    *
    * @throws InvalidObjectException 输入路径不是一个目录时抛出异常
    */
-  public void doExtract(Consumer<MultiVersionMetrics> s) throws InvalidObjectException {
+  public void doExtract(Consumer<MetricsExtractor> s) throws InvalidObjectException {
     doExtract(s, false);
   }
 
-  public void doExtract(Consumer<MultiVersionMetrics> s, boolean wait)
+  public void doExtract(Consumer<MetricsExtractor> s, boolean wait)
       throws InvalidObjectException {
     if (!checkPaths()) {
       throw new InvalidObjectException("输入路径不全是目录");
@@ -49,25 +49,18 @@ public class MetricsExtractor {
       Thread t = new Thread(() -> {
         //提取所有版本度量值
         MultiVersionMetrics metrics = new MultiVersionMetrics(
-            directoryPaths.parallelStream()
-                .map(
-                    path -> new SingleVersionMetrics(new JavaMetricExtractor(path).process(), path))
+            directoryPaths.stream()
+                .map(path -> new SingleVersionMetrics(new CK().calculate(path), path))
                 .sorted((a, b) -> a.compareVersion(b))
                 .collect(Collectors.toList())
         );
-
-        //TODO 补全代码
-        //计算两两版本变化
         try {
           metrics.getChangeValue();
         } catch (Exception x) {
           System.out.println("版本对比异常" + x);
         }
-
-        //metrics.getChangeRate(true);
-        //metrics.getRegression();
         resultCached = metrics;
-        s.accept(resultCached);
+        s.accept(this);
       });
       t.start();
       if (wait) {
@@ -77,13 +70,28 @@ public class MetricsExtractor {
           x.printStackTrace();
         }
       }
+
+
     } else {
-      s.accept(resultCached);
+      s.accept(this);
     }
+  }
+
+  public Logistic getRegression(String file) throws Exception {
+
+    Instances instances = new DataSource(file).getDataSet();
+    instances.setClassIndex(instances.numAttributes() - 1);
+    Logistic logic = new Logistic();
+    logic.buildClassifier(instances);
+    return logic;
   }
 
 
   public boolean checkPaths() {
     return directoryPaths.stream().allMatch(path -> new File(path).isDirectory());
+  }
+
+  public MultiVersionMetrics getMetrics() {
+    return resultCached;
   }
 }
