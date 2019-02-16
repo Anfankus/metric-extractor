@@ -7,10 +7,13 @@ import java.io.File;
 import java.io.InvalidObjectException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import weka.classifiers.Evaluation;
 import weka.classifiers.functions.Logistic;
+import weka.classifiers.functions.SMO;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
@@ -31,15 +34,17 @@ public class MetricsExtractor {
     //pool= Executors.newCachedThreadPool();
   }
 
-  /**
-   * 计算度量值调用的方法，将给定的路径作为待测项目根目录，计算ck值
-   *
-   * @throws InvalidObjectException 输入路径不是一个目录时抛出异常
-   */
   public void doExtract(Consumer<MetricsExtractor> s) throws InvalidObjectException {
     doExtract(s, false);
   }
 
+  /**
+   * 计算度量值调用的方法，将给定的路径作为待测项目根目录，计算ck值
+   *
+   * @param s 度量计算结束之后调用的回调函数
+   * @param wait 为true表示阻塞线程直至度量计算完成，为false表示不等待
+   * @throws InvalidObjectException 输入路径不全是目录的时候抛出
+   */
   public void doExtract(Consumer<MetricsExtractor> s, boolean wait)
       throws InvalidObjectException {
     if (!checkPaths()) {
@@ -78,8 +83,21 @@ public class MetricsExtractor {
     }
   }
 
-  public Logistic getRegression(String file) throws Exception {
 
+  //测试用，可随意修改
+  public SMO useSVM(String file) throws Exception {
+    Instances instances = new DataSource(file).getDataSet();
+
+    instances.setClassIndex(instances.numAttributes() - 1);
+    SMO smo = new SMO();
+    Evaluation eval = new Evaluation(instances);
+    eval.crossValidateModel(smo, instances, 10, new Random(2));
+    System.out.println(eval.toSummaryString());
+    return smo;
+  }
+  //测试用，可随意修改
+
+  public Logistic useLogistic(String file) throws Exception {
     Instances instances = new DataSource(file).getDataSet();
     instances.setClassIndex(instances.numAttributes() - 1);
     Logistic logic = new Logistic();
@@ -88,10 +106,14 @@ public class MetricsExtractor {
   }
 
 
+  /**
+   * 用来检查输入的路径是否都是文件夹
+   *
+   * @return {@code true} 均为文件夹
+   */
   public boolean checkPaths() {
     return directoryPaths.stream().allMatch(path -> new File(path).isDirectory());
   }
-
   public MultiVersionMetrics getMetrics() {
     return resultCached;
   }

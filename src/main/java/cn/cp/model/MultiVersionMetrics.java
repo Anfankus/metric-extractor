@@ -18,6 +18,7 @@ import weka.core.converters.ConverterUtils.DataSource;
 /**
  * 代表一个项目多个版本的所有度量值，包括计算后得到的各版本各类的度量值，各类的变化率和变化率的预测模型
  */
+
 public class MultiVersionMetrics {
 
   public List<SingleVersionMetrics> getMetrics() {
@@ -38,6 +39,8 @@ public class MultiVersionMetrics {
   /**
    * @return 以类为key，变化率为value的Map
    * @param outputfile 是否输出为文件，输出目录为项目根目录
+   *
+   * 目前没用
    */
   public HashMap<String, ArrayList<Double>> getChangeRate(boolean outputfile) {
     if (changeRateCached == null) {
@@ -118,6 +121,7 @@ public class MultiVersionMetrics {
       SingleVersionMetrics currentVer = getMetrics().get(i - 1),
           behindVer = getMetrics().get(i);
 
+      //提取两版本的变化值
       TwoVersComparator comparator = new TwoVersComparator();
       comparator.compare(new File(currentVer.originFilePath), new File(behindVer.originFilePath));
       HashMap<String, Diff> diffs = comparator.getDiffs();

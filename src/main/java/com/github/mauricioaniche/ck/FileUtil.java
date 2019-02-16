@@ -2,6 +2,7 @@ package com.github.mauricioaniche.ck;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 
 public class FileUtil {
@@ -52,6 +53,10 @@ public class FileUtil {
   private static void getAllFiles(String path, ArrayList<String> files, String suffix) {
     File f = new File(path);
     if (f.getName().equals(".git")) {
+      return;
+    }
+    if (suffix.equals(".java") && Pattern.compile("(test)|(ui)", Pattern.CASE_INSENSITIVE)
+        .matcher(path).find()) {
       return;
     }
 

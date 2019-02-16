@@ -102,6 +102,11 @@ public class SingleVersionMetrics {
   }
 
   public void printFile(String filepath)throws Exception{
+    File dst = new File(filepath);
+    if (dst.exists()) {
+      dst.delete();
+      dst.createNewFile();
+    }
     PrintWriter pw=new PrintWriter(new FileWriter(filepath,true));
 
     pw.println(String.join(",", SingleClassAllMetrics.getMetricsName()));

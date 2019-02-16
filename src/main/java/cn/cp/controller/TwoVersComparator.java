@@ -70,8 +70,8 @@ public class TwoVersComparator extends AstComparator {
   }
 
   public static void main(String[] args) throws Exception {
-    String path1 = "E:\\IDEAProject\\demo\\junit4-r4.6";
-    String path2 = "E:\\IDEAProject\\demo\\junit4-r4.8";
+    String path1 = "E:\\IDEAProject\\demo\\zxing-zxing-3.0.0";
+    String path2 = "E:\\IDEAProject\\demo\\zxing-zxing-3.1.0";
     File file1 = new File(path1);
     File file2 = new File(path2);
 
