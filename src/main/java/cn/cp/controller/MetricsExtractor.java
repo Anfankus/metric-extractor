@@ -4,6 +4,7 @@ import cn.cp.model.MultiVersionMetrics;
 import cn.cp.model.SingleVersionMetrics;
 import com.github.mauricioaniche.ck.JavaMetricExtractor;
 import java.io.File;
+import java.io.InputStream;
 import java.io.InvalidObjectException;
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.Logistic;
 import weka.classifiers.functions.SMO;
-import weka.core.Instance;
+import weka.classifiers.trees.J48;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 
@@ -27,11 +28,8 @@ public class MetricsExtractor {
   private List<String> directoryPaths;
   private MultiVersionMetrics resultCached;
 
-  private Executor pool;//暂时无用
-
   public MetricsExtractor(String[] directoryPaths) {
     this.directoryPaths = Arrays.asList(directoryPaths);
-    //pool= Executors.newCachedThreadPool();
   }
 
   public void doExtract(Consumer<MetricsExtractor> s) throws InvalidObjectException {
@@ -85,19 +83,38 @@ public class MetricsExtractor {
 
 
   //测试用，可随意修改
-  public SMO useSVM(String file) throws Exception {
-    Instances instances = new DataSource(file).getDataSet();
+  public SMO useSVM(InputStream train, InputStream test) throws Exception {
+    Instances newTrainSets = new DataSource(train).getDataSet();
+    Instances newTestSets = new DataSource(test).getDataSet();
+    newTrainSets.setClassIndex(newTrainSets.numAttributes() - 1);
+    newTestSets.setClassIndex(newTestSets.numAttributes() - 1);
 
-    instances.setClassIndex(instances.numAttributes() - 1);
     SMO smo = new SMO();
-    Evaluation eval = new Evaluation(instances);
-    eval.crossValidateModel(smo, instances, 10, new Random(2));
+    smo.buildClassifier(newTrainSets);
+    Evaluation eval = new Evaluation(newTrainSets);
+    eval.evaluateModel(smo, newTestSets);
     System.out.println(eval.toSummaryString());
     return smo;
   }
-  //测试用，可随意修改
 
-  public Logistic useLogistic(String file) throws Exception {
+  public J48 useJ48(InputStream train, InputStream test) throws Exception {
+    Instances newTrainSets = new DataSource(train).getDataSet();
+    Instances newTestSets = new DataSource(test).getDataSet();
+
+    newTrainSets.setClassIndex(newTrainSets.numAttributes() - 1);
+    newTestSets.setClassIndex(newTestSets.numAttributes() - 1);
+
+    J48 tree = new J48();
+    tree.setOptions(new String[]{""});
+    tree.buildClassifier(newTrainSets);
+    Evaluation eval = new Evaluation(newTrainSets);
+    eval.evaluateModel(tree, newTestSets);
+    System.out.println(eval.toSummaryString());
+    return tree;
+  }
+
+  //测试用，可随意修改
+  public Logistic useLogistic(InputStream file) throws Exception {
     Instances instances = new DataSource(file).getDataSet();
     instances.setClassIndex(instances.numAttributes() - 1);
     Logistic logic = new Logistic();

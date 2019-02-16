@@ -64,7 +64,7 @@ public class SingleClassAllMetrics {
       for (int i = 1; i < res.length; i++) {
         sb.append(spliter).append(res[i]);
       }
-      sb.append(spliter).append(changeValue);
+      //sb.append(spliter).append(changeValue);
       sb.append(spliter).append(ischanged);
       ps.println(sb.toString());
     }
@@ -90,7 +90,7 @@ public class SingleClassAllMetrics {
     return new Object[]{ischanged, changeValue};
   }
   public static String[] getMetricsName(){
-    return "dit,noc,wmc,cbo,lcom,rfc,nom,nopm,nosm,no,nopf,nosf,nosi,loc,changeValue,ischanged"
+    return "dit,noc,wmc,cbo,lcom,rfc,nom,nopm,nosm,no,nopf,nosf,nosi,loc,ischanged"
         .split(",");
   }
 }

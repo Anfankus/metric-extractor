@@ -4,15 +4,9 @@ import cn.cp.controller.MetricsExtractor;
 
 import gumtree.spoon.AstComparator;
 import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.io.InputStream;
 import org.junit.Before;
 import org.junit.Test;
-import weka.classifiers.functions.Logistic;
-import weka.classifiers.functions.SMO;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.converters.ConverterUtils.DataSource;
 
 public class TestModel {
 
@@ -21,7 +15,8 @@ public class TestModel {
   @Before
   public void setPaths(){
     paths = new String[]{"E:\\IDEAProject\\demo\\zxing-zxing-3.0.0",
-        "E:\\IDEAProject\\demo\\zxing-zxing-3.1.0"};
+        "E:\\IDEAProject\\demo\\zxing-zxing-3.1.0",
+        "E:\\IDEAProject\\demo\\zxing-zxing-3.2.0"};
   }
 
   /**
@@ -33,11 +28,21 @@ public class TestModel {
     m.doExtract(x->{
       //x为计算度量完成后的结果
       try {
+        //获取所有度量值并保存至目录
         x.getMetrics().print2Direcory("tempoutput");
       } catch (Exception ex){
         ex.printStackTrace();
       }
     },true);
+  }
+  /**
+   * 测试预测模型
+   */
+  @Test
+  public void testClassfier() throws Exception {
+    InputStream train = TestModel.class.getResourceAsStream("/zxing 3.0.0.arff");
+    InputStream test = TestModel.class.getResourceAsStream("/zxing 3.1.0.arff");
+    new MetricsExtractor(paths).useJ48(train, test);
   }
 
   @Test
@@ -49,12 +54,4 @@ public class TestModel {
 
   }
 
-  /**
-   * 测试预测模型
-   * @throws Exception
-   */
-  @Test
-  public void testClassfier() throws Exception {
-    new MetricsExtractor(paths).useSVM("tempoutput/zxing 3.0.0.csv");
-  }
 }
