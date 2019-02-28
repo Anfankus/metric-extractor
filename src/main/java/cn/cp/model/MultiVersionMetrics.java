@@ -151,7 +151,8 @@ public class MultiVersionMetrics {
     if(!(f.exists()&&f.isDirectory()))
       f.mkdir();
     for(SingleVersionMetrics eachVer:metrics){
-      String path=rootPath+"/"+eachVer.getProjectName()+" "+eachVer.getVersion()+".csv";
+      String path =
+          rootPath + "/" + eachVer.getProjectName() + " " + eachVer.getVersion() + ".arff";
       eachVer.printFile(path);
     }
   }

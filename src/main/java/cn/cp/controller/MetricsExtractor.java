@@ -8,8 +8,6 @@ import java.io.InputStream;
 import java.io.InvalidObjectException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import weka.classifiers.Evaluation;
@@ -32,50 +30,33 @@ public class MetricsExtractor {
     this.directoryPaths = Arrays.asList(directoryPaths);
   }
 
-  public void doExtract(Consumer<MetricsExtractor> s) throws InvalidObjectException {
-    doExtract(s, false);
-  }
-
   /**
    * 计算度量值调用的方法，将给定的路径作为待测项目根目录，计算ck值
    *
    * @param s 度量计算结束之后调用的回调函数
-   * @param wait 为true表示阻塞线程直至度量计算完成，为false表示不等待
    * @throws InvalidObjectException 输入路径不全是目录的时候抛出
    */
-  public void doExtract(Consumer<MetricsExtractor> s, boolean wait)
+  public void doExtract(Consumer<MetricsExtractor> s)
       throws InvalidObjectException {
     if (!checkPaths()) {
       throw new InvalidObjectException("输入路径不全是目录");
     }
     if (resultCached == null) {
-      Thread t = new Thread(() -> {
-        //提取所有版本度量值
-        MultiVersionMetrics metrics = new MultiVersionMetrics(
-            directoryPaths.stream()
-                .map(
-                    path -> new SingleVersionMetrics(new JavaMetricExtractor(path).process(), path))
-                .sorted((a, b) -> a.compareVersion(b))
-                .collect(Collectors.toList())
-        );
-        try {
-          metrics.getChangeValue();
-        } catch (Exception x) {
-          System.out.println("版本对比异常" + x);
-        }
-        resultCached = metrics;
-        s.accept(this);
-      });
-      t.start();
-      if (wait) {
-        try {
-          t.join();
-        } catch (Exception x) {
-          x.printStackTrace();
-        }
+      //提取所有版本度量值
+      MultiVersionMetrics metrics = new MultiVersionMetrics(
+          directoryPaths.stream()
+              .map(
+                  path -> new SingleVersionMetrics(new JavaMetricExtractor(path).process(), path))
+              .sorted((a, b) -> a.compareVersion(b))
+              .collect(Collectors.toList())
+      );
+      try {
+        metrics.getChangeValue();
+      } catch (Exception x) {
+        System.out.println("版本对比异常" + x);
       }
-
-
+      resultCached = metrics;
+      s.accept(this);
     } else {
       s.accept(this);
     }
@@ -131,6 +112,7 @@ public class MetricsExtractor {
   public boolean checkPaths() {
     return directoryPaths.stream().allMatch(path -> new File(path).isDirectory());
   }
+
   public MultiVersionMetrics getMetrics() {
     return resultCached;
   }

@@ -4,11 +4,20 @@ import com.github.mauricioaniche.ck.MetricReport;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.SparseInstance;
+import weka.core.converters.ArffSaver;
 
 /**
  * SingleVersionMetrics 对于单个版本的所有度量，实质是SingleClassAllMetrics的数组封装
@@ -102,17 +111,36 @@ public class SingleVersionMetrics {
   }
 
   public void printFile(String filepath)throws Exception{
+    ArrayList<Attribute> attrs = new ArrayList<>();
+    for (int i = 0; i < SingleClassAllMetrics.getMetricsName().length - 1; i++) {
+      attrs.add(new Attribute(SingleClassAllMetrics.getMetricsName()[i]));
+    }
+    attrs.add(new Attribute("isChanged", Arrays.asList("true", "false")));
+    Instances ins = new Instances(getProjectName(), attrs, 0);
+    for (SingleClassAllMetrics eachClass : getMetrics().values()) {
+      Integer[] data = eachClass.getMetricsVal();
+
+      Instance currentIns = new DenseInstance(attrs.size());
+      for (int i = 0; i < attrs.size() - 1; i++) {
+        currentIns.setValue(attrs.get(i), data[i]);
+      }
+      Attribute at = attrs.get(attrs.size() - 1);
+      Object[] obs = eachClass.getChange();
+      if (obs[0] != null) {
+        currentIns.setValue(at, obs[0].toString());
+        currentIns.setDataset(ins);
+        ins.add(currentIns);
+      }
+    }
+    ins.setClassIndex(ins.numAttributes() - 1);
+
     File dst = new File(filepath);
     if (dst.exists()) {
       dst.delete();
-      dst.createNewFile();
     }
-    PrintWriter pw=new PrintWriter(new FileWriter(filepath,true));
-
-    pw.println(String.join(",", SingleClassAllMetrics.getMetricsName()));
-    for (SingleClassAllMetrics each : getMetrics().values()) {
-      each.println(pw);
-    }
-    pw.close();
+    ArffSaver saver = new ArffSaver();
+    saver.setInstances(ins);
+    saver.setFile(dst);
+    saver.writeBatch();
   }
 }

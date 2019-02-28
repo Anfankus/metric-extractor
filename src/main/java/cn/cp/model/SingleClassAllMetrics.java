@@ -8,7 +8,6 @@ import java.io.PrintWriter;
  * 提供 返回度量指标名称数组，和度量值数组的方法
  */
 
-
 public class SingleClassAllMetrics {
   private String className;
   private MetricValue metrics;
@@ -53,6 +52,7 @@ public class SingleClassAllMetrics {
    * @param spliter :度量数值之间的分隔符
    * @return 返回传入的输出流，方便串联
    */
+  @Deprecated
   PrintWriter println(PrintWriter ps,String spliter){
 
     if (changeValue != null) {
@@ -70,6 +70,8 @@ public class SingleClassAllMetrics {
     }
     return ps;
   }
+
+  @Deprecated
   PrintWriter println(PrintWriter ps){
     return println(ps,",");
   }

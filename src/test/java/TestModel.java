@@ -4,6 +4,7 @@ import cn.cp.controller.MetricsExtractor;
 
 import gumtree.spoon.AstComparator;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,9 +15,11 @@ public class TestModel {
 
   @Before
   public void setPaths(){
-    paths = new String[]{"E:\\IDEAProject\\demo\\zxing-zxing-3.0.0",
-        "E:\\IDEAProject\\demo\\zxing-zxing-3.1.0",
-        "E:\\IDEAProject\\demo\\zxing-zxing-3.2.0"};
+    paths = new String[]{"E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.0.0",
+        "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.1.0",
+        "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.2.0",
+        "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.3.0",
+        "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.3.1"};
   }
 
   /**
@@ -33,16 +36,19 @@ public class TestModel {
       } catch (Exception ex){
         ex.printStackTrace();
       }
-    },true);
+    });
   }
   /**
    * 测试预测模型
    */
   @Test
   public void testClassfier() throws Exception {
-    InputStream train = TestModel.class.getResourceAsStream("/zxing 3.0.0.arff");
-    InputStream test = TestModel.class.getResourceAsStream("/zxing 3.1.0.arff");
-    new MetricsExtractor(paths).useJ48(train, test);
+//    InputStream train = TestModel.class.getResourceAsStream("/zxing 3.0.0.arff");
+//    InputStream test = TestModel.class.getResourceAsStream("/zxing 3.1.0.arff");
+//    new MetricsExtractor(paths).useJ48(train,test);
+
+    new MetricsExtractor(paths).useJ48(new FileInputStream("tempoutput/zxing 3.0.0.arff"),
+        new FileInputStream("tempoutput/zxing 3.3.0.arff"));
   }
 
   @Test

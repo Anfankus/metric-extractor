@@ -55,8 +55,9 @@ public class FileUtil {
     if (f.getName().equals(".git")) {
       return;
     }
-    if (suffix.equals(".java") && Pattern.compile("(test)|(ui)", Pattern.CASE_INSENSITIVE)
-        .matcher(path).find()) {
+    if (suffix.equals(".java")
+        &&
+        Pattern.compile("(test)|(ui)", Pattern.CASE_INSENSITIVE).matcher(path).find()) {
       return;
     }
 
