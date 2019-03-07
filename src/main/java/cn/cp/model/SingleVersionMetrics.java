@@ -1,5 +1,6 @@
 package cn.cp.model;
 
+import cn.cp.formula.VIF;
 import com.github.mauricioaniche.ck.MetricReport;
 import java.io.File;
 import java.io.FileWriter;
@@ -18,6 +19,8 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SparseInstance;
 import weka.core.converters.ArffSaver;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.Remove;
 
 /**
  * SingleVersionMetrics 对于单个版本的所有度量，实质是SingleClassAllMetrics的数组封装
@@ -133,7 +136,19 @@ public class SingleVersionMetrics {
       }
     }
     ins.setClassIndex(ins.numAttributes() - 1);
-
+    if (ins.size() <= 0) {
+      return;
+    }
+    VIF vif = new VIF(ins);
+    double[] result = vif.getVIFs();
+    for (int index = 0; index < result.length; index++) {
+      if (result[index] > 10) {
+        Remove remove = new Remove();
+        remove.setOptions(new String[]{"-R", index + 1 + ""});
+        remove.setInputFormat(ins);
+        ins = Filter.useFilter(ins, remove);
+      }
+    }
     File dst = new File(filepath);
     if (dst.exists()) {
       dst.delete();

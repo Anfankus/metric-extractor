@@ -77,10 +77,10 @@ public class VIF {
     this.verbose = verbose;
   }
   public static void main(String[] args) {
-    String fileName = "C:\\Users\\38110\\Desktop\\datasets\\regression-datasets\\regression-datasets\\fried.arff";
+    String fileName = "tempoutput/zxing 3.1.0.arff";
     int attrIndex = -1;
     VIF vif = null;
-    boolean verbose = false;
+    boolean verbose = true;
 
     for (int i = 0; i < args.length; i++) {
       switch (args[i]) {

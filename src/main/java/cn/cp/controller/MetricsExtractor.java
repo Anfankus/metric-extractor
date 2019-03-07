@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import weka.classifiers.Evaluation;
+import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.functions.Logistic;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.trees.J48;
@@ -74,7 +75,8 @@ public class MetricsExtractor {
     smo.buildClassifier(newTrainSets);
     Evaluation eval = new Evaluation(newTrainSets);
     eval.evaluateModel(smo, newTestSets);
-    System.out.println(eval.toSummaryString());
+    System.out.println(eval.toSummaryString("Summary:", true));
+    System.out.println(eval.toClassDetailsString("Detail:"));
     return smo;
   }
 
@@ -90,8 +92,25 @@ public class MetricsExtractor {
     tree.buildClassifier(newTrainSets);
     Evaluation eval = new Evaluation(newTrainSets);
     eval.evaluateModel(tree, newTestSets);
-    System.out.println(eval.toSummaryString());
+    System.out.println(eval.toSummaryString("Summary:", true));
+    System.out.println(eval.toClassDetailsString("Detail:"));
     return tree;
+  }
+
+  public NaiveBayes useBayes(InputStream train, InputStream test) throws Exception {
+    Instances newTrainSets = new DataSource(train).getDataSet();
+    Instances newTestSets = new DataSource(test).getDataSet();
+
+    newTrainSets.setClassIndex(newTrainSets.numAttributes() - 1);
+    newTestSets.setClassIndex(newTestSets.numAttributes() - 1);
+    NaiveBayes bayes = new NaiveBayes();
+    bayes.setOptions(new String[]{"-K"});
+    bayes.buildClassifier(newTrainSets);
+    Evaluation eval = new Evaluation(newTrainSets);
+    eval.evaluateModel(bayes, newTestSets);
+    System.out.println(eval.toSummaryString("Summary:", true));
+    System.out.println(eval.toClassDetailsString("Detail:"));
+    return bayes;
   }
 
   //测试用，可随意修改
