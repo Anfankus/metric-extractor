@@ -1,7 +1,3 @@
-import ch.uzh.ifi.seal.changedistiller.ChangeDistiller;
-import ch.uzh.ifi.seal.changedistiller.ChangeDistiller.Language;
-import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
-import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 import cn.cp.controller.MetricsExtractor;
 import gumtree.spoon.AstComparator;
 import java.io.File;
@@ -29,7 +25,7 @@ public class TestModel {
         "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.10"
     };
 
-    paths = zxings;
+    paths = junits;
   }
 
   /**
@@ -64,8 +60,8 @@ public class TestModel {
 
   @Test
   public void gumtree() throws Exception {
-    String file1 = "E:\\IDEAProject\\demo\\junit4-r4.6\\src\\main\\java\\org\\junit\\runner\\Description.java";
-    String file2 = "E:\\IDEAProject\\demo\\junit4-r4.8\\src\\main\\java\\org\\junit\\runner\\Description.java";
+    String file1 = "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.6\\src\\main\\java\\org\\junit\\runner\\Description.java";
+    String file2 = "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.8\\src\\main\\java\\org\\junit\\runner\\Description.java";
 
     new AstComparator().compare(new File(file1), new File(file2));
 

@@ -113,7 +113,11 @@ public class SingleVersionMetrics {
     return metrics;
   }
 
-  public void printFile(String filepath)throws Exception{
+
+  /**
+   * @return 返回这个版本的度量值经过vif过滤之后得到的weka数据集格式，即{@link weka.core.Instances}
+   */
+  public Instances getWekaData() {
     ArrayList<Attribute> attrs = new ArrayList<>();
     for (int i = 0; i < SingleClassAllMetrics.getMetricsName().length - 1; i++) {
       attrs.add(new Attribute(SingleClassAllMetrics.getMetricsName()[i]));
@@ -136,17 +140,30 @@ public class SingleVersionMetrics {
       }
     }
     ins.setClassIndex(ins.numAttributes() - 1);
+    return ins;
+  }
+
+  /**
+   * 把当前度量值输出为一个.arff文件
+   *
+   * @param filepath 以{@code .arff}结尾的文件名，若文件已存在则会覆盖此文件
+   * @throws Exception 抛出IO异常{@link java.io.IOException}
+   */
+  public void printFile(String filepath)throws Exception{
+    Instances ins = getWekaData();
     if (ins.size() <= 0) {
       return;
     }
     VIF vif = new VIF(ins);
     double[] result = vif.getVIFs();
-    for (int index = 0; index < result.length; index++) {
+    for (int index = 0, i = 1; index < result.length; index++) {
       if (result[index] > 10) {
         Remove remove = new Remove();
-        remove.setOptions(new String[]{"-R", index + 1 + ""});
+        remove.setOptions(new String[]{"-R", i + ""});
         remove.setInputFormat(ins);
         ins = Filter.useFilter(ins, remove);
+      } else {
+        i++;
       }
     }
     File dst = new File(filepath);
