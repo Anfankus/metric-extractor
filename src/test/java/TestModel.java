@@ -3,6 +3,8 @@ import gumtree.spoon.AstComparator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,10 +21,8 @@ public class TestModel {
         "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.3.1"
     };
     String[] junits = new String[]{
-        "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.6",
-        "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.8",
-        "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.9",
-        "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.10"
+        "C:\\Users\\Thinkpad\\Desktop\\变更预测\\JCM\\junit4-r3.8.2",
+        "C:\\Users\\Thinkpad\\Desktop\\变更预测\\JCM\\junit4-r4.9b3"
     };
 
     paths = junits;
@@ -53,9 +53,37 @@ public class TestModel {
 //    InputStream train = TestModel.class.getResourceAsStream("/zxing 3.0.0.arff");
 //    InputStream test = TestModel.class.getResourceAsStream("/zxing 3.1.0.arff");
 //    new MetricsExtractor(paths).useJ48(train,test);
+    Map<String,Object> result;
+    Map<String,Object> result1 =new MetricsExtractor(paths).useSVM(new FileInputStream("C:\\Users\\Thinkpad\\Desktop\\变更预测\\Metrics-master0.2\\Metrics-master\\src\\test\\resources\\zxing 3.0.0.arff"),
+            new FileInputStream("C:\\Users\\Thinkpad\\Desktop\\变更预测\\Metrics-master0.2\\Metrics-master\\src\\test\\resources\\zxing 3.1.0.arff"));
 
-    new MetricsExtractor(paths).useBayes(new FileInputStream("tempoutput/zxing 3.0.0.arff"),
-        new FileInputStream("tempoutput/zxing 3.1.0.arff"));
+    result=result1;
+    Map<String,Object> result2 =new MetricsExtractor(paths).useBayes(new FileInputStream("C:\\Users\\Thinkpad\\Desktop\\变更预测\\Metrics-master0.2\\Metrics-master\\src\\test\\resources\\zxing 3.0.0.arff"),
+            new FileInputStream("C:\\Users\\Thinkpad\\Desktop\\变更预测\\Metrics-master0.2\\Metrics-master\\src\\test\\resources\\zxing 3.1.0.arff"));
+
+    if(Double.parseDouble(result.get("recall").toString())<Double.parseDouble(result1.get("recall").toString()))
+    {
+      result=result2;
+    }
+
+    Map<String,Object> result3 =new MetricsExtractor(paths).useJ48(new FileInputStream("C:\\Users\\Thinkpad\\Desktop\\变更预测\\Metrics-master0.2\\Metrics-master\\src\\test\\resources\\zxing 3.0.0.arff"),
+            new FileInputStream("C:\\Users\\Thinkpad\\Desktop\\变更预测\\Metrics-master0.2\\Metrics-master\\src\\test\\resources\\zxing 3.1.0.arff"));
+
+    if(Double.parseDouble(result.get("recall").toString())<Double.parseDouble(result3.get("recall").toString()))
+    {
+      result=result3;
+    }
+    Map<String,Object> result4 =new MetricsExtractor(paths).useLogistic(new FileInputStream("C:\\Users\\Thinkpad\\Desktop\\变更预测\\Metrics-master0.2\\Metrics-master\\src\\test\\resources\\zxing 3.0.0.arff"),
+            new FileInputStream("C:\\Users\\Thinkpad\\Desktop\\变更预测\\Metrics-master0.2\\Metrics-master\\src\\test\\resources\\zxing 3.1.0.arff"));
+
+    if(Double.parseDouble(result.get("recall").toString())<Double.parseDouble(result4.get("recall").toString()))
+    {
+      result=result4;
+    }
+    System.out.println("final recall : "+result.get("recall"));
+
+
+
   }
 
   @Test

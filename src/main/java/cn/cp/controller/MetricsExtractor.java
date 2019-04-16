@@ -6,6 +6,7 @@ import com.github.mauricioaniche.ck.JavaMetricExtractor;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InvalidObjectException;
+import java.util.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -21,6 +22,8 @@ import weka.core.converters.ConverterUtils.DataSource;
 /**
  * 为进行度量计算而实例化的类，其他模块在计算度量值时实际用到的类
  */
+
+
 public class MetricsExtractor {
 
 
@@ -65,7 +68,8 @@ public class MetricsExtractor {
 
 
   //测试用，可随意修改
-  public SMO useSVM(InputStream train, InputStream test) throws Exception {
+  public Map<String,Object> useSVM(InputStream train, InputStream test) throws Exception {
+    Map<String,Object> result = new HashMap<String,Object>();
     Instances newTrainSets = new DataSource(train).getDataSet();
     Instances newTestSets = new DataSource(test).getDataSet();
     newTrainSets.setClassIndex(newTrainSets.numAttributes() - 1);
@@ -75,12 +79,16 @@ public class MetricsExtractor {
     smo.buildClassifier(newTrainSets);
     Evaluation eval = new Evaluation(newTrainSets);
     eval.evaluateModel(smo, newTestSets);
+    System.out.println("recall : "+eval.recall(0));
     System.out.println(eval.toSummaryString("Summary:", true));
     System.out.println(eval.toClassDetailsString("Detail:"));
-    return smo;
+    result.put("recall",eval.recall(0));
+    result.put("Prediction",smo);
+    return result;
   }
 
-  public J48 useJ48(InputStream train, InputStream test) throws Exception {
+  public Map<String,Object> useJ48(InputStream train, InputStream test) throws Exception {
+    Map<String,Object> result = new HashMap<String,Object>();
     Instances newTrainSets = new DataSource(train).getDataSet();
     Instances newTestSets = new DataSource(test).getDataSet();
 
@@ -92,12 +100,16 @@ public class MetricsExtractor {
     tree.buildClassifier(newTrainSets);
     Evaluation eval = new Evaluation(newTrainSets);
     eval.evaluateModel(tree, newTestSets);
+    System.out.println("recall : "+eval.recall(0));
     System.out.println(eval.toSummaryString("Summary:", true));
     System.out.println(eval.toClassDetailsString("Detail:"));
-    return tree;
+    result.put("recall",eval.recall(0));
+    result.put("Prediction",tree);
+    return result;
   }
 
-  public NaiveBayes useBayes(InputStream train, InputStream test) throws Exception {
+  public Map<String,Object> useBayes(InputStream train, InputStream test) throws Exception {
+    Map<String,Object> result = new HashMap<String,Object>();
     Instances newTrainSets = new DataSource(train).getDataSet();
     Instances newTestSets = new DataSource(test).getDataSet();
 
@@ -108,20 +120,41 @@ public class MetricsExtractor {
     bayes.buildClassifier(newTrainSets);
     Evaluation eval = new Evaluation(newTrainSets);
     eval.evaluateModel(bayes, newTestSets);
+    System.out.println("recall : "+eval.recall(0));
     System.out.println(eval.toSummaryString("Summary:", true));
     System.out.println(eval.toClassDetailsString("Detail:"));
-    return bayes;
+    result.put("recall",eval.recall(0));
+    result.put("Prediction",bayes);
+    return result;
   }
 
   //测试用，可随意修改
-  public Logistic useLogistic(InputStream file) throws Exception {
-    Instances instances = new DataSource(file).getDataSet();
-    instances.setClassIndex(instances.numAttributes() - 1);
-    Logistic logic = new Logistic();
-    logic.buildClassifier(instances);
-    return logic;
-  }
+//  public Logistic useLogistic(InputStream file) throws Exception {
+//    Instances instances = new DataSource(file).getDataSet();
+//    instances.setClassIndex(instances.numAttributes() - 1);
+//    Logistic logic = new Logistic();
+//    logic.buildClassifier(instances);
+//    return logic;
+//  }
+  public Map<String,Object> useLogistic(InputStream train, InputStream test) throws Exception {
+    Map<String,Object> result = new HashMap<String,Object>();
+    Instances newTrainSets = new DataSource(train).getDataSet();
+    Instances newTestSets = new DataSource(test).getDataSet();
 
+    newTrainSets.setClassIndex(newTrainSets.numAttributes() - 1);
+    newTestSets.setClassIndex(newTestSets.numAttributes() - 1);
+
+    Logistic logic = new Logistic();
+    logic.buildClassifier(newTrainSets);
+    Evaluation eval = new Evaluation(newTrainSets);
+    eval.evaluateModel(logic, newTestSets);
+    System.out.println("recall : "+eval.recall(0));
+    System.out.println(eval.toSummaryString("Summary:", true));
+    System.out.println(eval.toClassDetailsString("Detail:"));
+    result.put("recall",eval.recall(0));
+    result.put("Prediction",logic);
+    return result;
+  }
 
   /**
    * 用来检查输入的路径是否都是文件夹
