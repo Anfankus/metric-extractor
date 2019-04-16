@@ -1,16 +1,26 @@
 package cn.cp.model;
 
-import com.github.mauricioaniche.ck.CKReport;
+import cn.cp.formula.VIF;
+import com.github.mauricioaniche.ck.MetricReport;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.SparseInstance;
+import weka.core.converters.ArffSaver;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.Remove;
 
 /**
  * SingleVersionMetrics 对于单个版本的所有度量，实质是SingleClassAllMetrics的数组封装
@@ -21,15 +31,15 @@ public class SingleVersionMetrics {
   private String ProjectName;
   private String fileName;
   private HashMap<String, SingleClassAllMetrics> metrics;
-  private CKReport _source;
-  public String _filePath;
+  private MetricReport _source;
+  public String originFilePath;
 
-  public SingleVersionMetrics(CKReport re, String path) {
-    _filePath = path;
+  public SingleVersionMetrics(MetricReport re, String path) {
+    originFilePath = path;
     fileName = new File(path).getName();
     _source=re;
     metrics = (HashMap<String, SingleClassAllMetrics>) re
-        .all()
+        .getCKMetrics()
         .stream()
         .map(each -> new SingleClassAllMetrics(each))
         .collect(Collectors.toMap(SingleClassAllMetrics::getClassName, x -> x));
@@ -103,13 +113,66 @@ public class SingleVersionMetrics {
     return metrics;
   }
 
-  public void printFile(String filepath)throws Exception{
-    PrintWriter pw=new PrintWriter(new FileWriter(filepath,true));
 
-    pw.println(String.join(",", SingleClassAllMetrics.getMetricsName()));
-    for (SingleClassAllMetrics each : getMetrics().values()) {
-      each.println(pw);
+  /**
+   * @return 返回这个版本的度量值经过vif过滤之后得到的weka数据集格式，即{@link weka.core.Instances}
+   */
+  public Instances getWekaData() {
+    ArrayList<Attribute> attrs = new ArrayList<>();
+    for (int i = 0; i < SingleClassAllMetrics.getMetricsName().length - 1; i++) {
+      attrs.add(new Attribute(SingleClassAllMetrics.getMetricsName()[i]));
     }
-    pw.close();
+    attrs.add(new Attribute("isChanged", Arrays.asList("true", "false")));
+    Instances ins = new Instances(getProjectName(), attrs, 0);
+    for (SingleClassAllMetrics eachClass : getMetrics().values()) {
+      Integer[] data = eachClass.getMetricsVal();
+
+      Instance currentIns = new DenseInstance(attrs.size());
+      for (int i = 0; i < attrs.size() - 1; i++) {
+        currentIns.setValue(attrs.get(i), data[i]);
+      }
+      Attribute at = attrs.get(attrs.size() - 1);
+      Object[] obs = eachClass.getChange();
+      if (obs[0] != null) {
+        currentIns.setValue(at, obs[0].toString());
+        currentIns.setDataset(ins);
+        ins.add(currentIns);
+      }
+    }
+    ins.setClassIndex(ins.numAttributes() - 1);
+    return ins;
+  }
+
+  /**
+   * 把当前度量值输出为一个.arff文件
+   *
+   * @param filepath 以{@code .arff}结尾的文件名，若文件已存在则会覆盖此文件
+   * @throws Exception 抛出IO异常{@link java.io.IOException}
+   */
+  public void printFile(String filepath)throws Exception{
+    Instances ins = getWekaData();
+    if (ins.size() <= 0) {
+      return;
+    }
+    VIF vif = new VIF(ins);
+    double[] result = vif.getVIFs();
+    for (int index = 0, i = 1; index < result.length; index++) {
+      if (result[index] > 10) {
+        Remove remove = new Remove();
+        remove.setOptions(new String[]{"-R", i + ""});
+        remove.setInputFormat(ins);
+        ins = Filter.useFilter(ins, remove);
+      } else {
+        i++;
+      }
+    }
+    File dst = new File(filepath);
+    if (dst.exists()) {
+      dst.delete();
+    }
+    ArffSaver saver = new ArffSaver();
+    saver.setInstances(ins);
+    saver.setFile(dst);
+    saver.writeBatch();
   }
 }

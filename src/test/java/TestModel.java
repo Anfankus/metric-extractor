@@ -1,73 +1,69 @@
-
-
 import cn.cp.controller.MetricsExtractor;
-
 import gumtree.spoon.AstComparator;
 import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.io.FileInputStream;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
-import weka.classifiers.functions.Logistic;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.converters.ConverterUtils.DataSource;
 
 public class TestModel {
-  String[] paths;
 
+  String[] paths;
   @Before
-  public void setPaths(){
-    paths=new String[]{"E:\\IDEAProject\\demo\\junit4-r4.12",
-        "E:\\IDEAProject\\demo\\junit4-r4.11",
-        "E:\\IDEAProject\\demo\\junit4-r4.10",
-        "E:\\IDEAProject\\demo\\junit4-r4.9",
-        "E:\\IDEAProject\\demo\\junit4-r4.8",
-        "E:\\IDEAProject\\demo\\junit4-r4.6"};
+  public void setPaths() {
+    String[] zxings = new String[]{
+        "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.0.0",
+        "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.1.0",
+        "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.2.0",
+        "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.3.0",
+        "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.3.1"
+    };
+    String[] junits = new String[]{
+        "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.6",
+        "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.8",
+        "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.9",
+        "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.10"
+    };
+
+    paths = junits;
   }
 
+  /**
+   * 从输入的目录中分别计算类的各个度量值，然后在计算两两版本之间的变化值，然后标记变化与否，将结果输出至 tempoutput 目录下 输入多于两个版本的路径，只是会分别两两对比，没有级联
+   */
   @Test
-  public void testMultiVersions()throws Exception{
-    MetricsExtractor m=new MetricsExtractor(paths);
-    m.doExtract(x->{
-      try{
+  public void calculateMetric() throws Exception {
+    MetricsExtractor m = new MetricsExtractor(paths);
+    m.doExtract(x -> {
+      //x为计算度量完成后的结果
+      try {
+        //获取所有度量值并保存至目录
         x.getMetrics().print2Direcory("tempoutput");
-
-        Logistic logistic = x.getRegression("tempoutput/junit4 4.6.csv");
-
-
-      }
-      catch (Exception ex){
+      } catch (Exception ex) {
         ex.printStackTrace();
       }
-    },true);
+    });
+  }
+
+  /**
+   * 测试预测模型
+   */
+  @Test
+  public void classify() throws Exception {
+//    InputStream train = TestModel.class.getResourceAsStream("/zxing 3.0.0.arff");
+//    InputStream test = TestModel.class.getResourceAsStream("/zxing 3.1.0.arff");
+//    new MetricsExtractor(paths).useJ48(train,test);
+
+    new MetricsExtractor(paths).useBayes(new FileInputStream("tempoutput/zxing 3.0.0.arff"),
+        new FileInputStream("tempoutput/zxing 3.1.0.arff"));
   }
 
   @Test
-  public void vif() throws Exception {
-    String file1 = "E:\\IDEAProject\\demo\\junit4-r4.6\\src\\main\\java\\org\\junit\\runner\\Description.java";
-    String file2 = "E:\\IDEAProject\\demo\\junit4-r4.8\\src\\main\\java\\org\\junit\\runner\\Description.java";
+  public void gumtree() throws Exception {
+    String file1 = "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.6\\src\\main\\java\\org\\junit\\runner\\Description.java";
+    String file2 = "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.8\\src\\main\\java\\org\\junit\\runner\\Description.java";
 
     new AstComparator().compare(new File(file1), new File(file2));
-
-  }
-
-  @Test
-  public void modelTest() throws Exception {
-    MetricsExtractor x = new MetricsExtractor(new String[]{});
-    Logistic logic = x.getRegression("tempoutput/junit4 4.8.csv");
-    Instances test = new DataSource("tempoutput/junit4 4.10.csv").getDataSet();
-    test.setClassIndex(test.numAttributes() - 1);
-    int a = 0;
-    int b = 0;
-    for (Instance i : test) {
-      if (logic.classifyInstance(i) == i.classValue()) {
-        a++;
-      }
-      b++;
-    }
-
-    System.out.println(a * 1.0 / b);
 
   }
 }

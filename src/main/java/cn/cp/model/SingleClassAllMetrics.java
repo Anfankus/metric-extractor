@@ -1,7 +1,6 @@
 package cn.cp.model;
 
-import com.github.mauricioaniche.ck.CKNumber;
-import java.io.PrintStream;
+import com.github.mauricioaniche.ck.MetricValue;
 import java.io.PrintWriter;
 
 /**
@@ -9,15 +8,18 @@ import java.io.PrintWriter;
  * 提供 返回度量指标名称数组，和度量值数组的方法
  */
 
-
 public class SingleClassAllMetrics {
   private String className;
-  private CKNumber metrics;
+  private MetricValue metrics;
   private Boolean ischanged;
   private Integer changeValue;
-  public SingleClassAllMetrics(CKNumber source){
+
+  public SingleClassAllMetrics(MetricValue source) {
     metrics=source;
-    className=metrics.getClassName();
+    className = metrics.getFullyQualifiedClassName();
+    if (className.equalsIgnoreCase("org.junit.AfterClass")) {
+      System.out.println();
+    }
   }
 
   /**
@@ -50,6 +52,7 @@ public class SingleClassAllMetrics {
    * @param spliter :度量数值之间的分隔符
    * @return 返回传入的输出流，方便串联
    */
+  @Deprecated
   PrintWriter println(PrintWriter ps,String spliter){
 
     if (changeValue != null) {
@@ -61,16 +64,19 @@ public class SingleClassAllMetrics {
       for (int i = 1; i < res.length; i++) {
         sb.append(spliter).append(res[i]);
       }
+      //sb.append(spliter).append(changeValue);
       sb.append(spliter).append(ischanged);
       ps.println(sb.toString());
     }
     return ps;
   }
+
+  @Deprecated
   PrintWriter println(PrintWriter ps){
     return println(ps,",");
   }
 
-  public CKNumber getMetrics() {
+  public MetricValue getMetrics() {
     return metrics;
   }
   public String getClassName(){

@@ -7,7 +7,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import spoon.reflect.declaration.CtType;
+import spoon.support.reflect.declaration.CtClassImpl;
 
 public class TwoVersComparator extends AstComparator {
 
@@ -38,6 +41,16 @@ public class TwoVersComparator extends AstComparator {
   public void compare(File f1, File f2) throws Exception {
     List<CtType<?>> list1 = getCtType(f1);
     List<CtType<?>> list2 = getCtType(f2);
+
+    //筛除test,ui文件路径
+
+    Pattern pattern = Pattern.compile("(test)|(ui)", Pattern.CASE_INSENSITIVE);
+    list1 = list1.stream()
+        .filter(each -> !pattern.matcher(each.getPosition().getFile().getAbsolutePath()).find())
+        .collect(Collectors.toList());
+    list2 = list2.stream()
+        .filter(each -> !pattern.matcher(each.getPosition().getFile().getAbsolutePath()).find())
+        .collect(Collectors.toList());
 
     for (CtType ctTypeLeft : list1) {
       CtType toMatch = null;
@@ -70,8 +83,8 @@ public class TwoVersComparator extends AstComparator {
   }
 
   public static void main(String[] args) throws Exception {
-    String path1 = "E:\\IDEAProject\\demo\\junit4-r4.6";
-    String path2 = "E:\\IDEAProject\\demo\\junit4-r4.8";
+    String path1 = "E:\\IDEAProject\\demo\\zxing-zxing-3.0.0";
+    String path2 = "E:\\IDEAProject\\demo\\zxing-zxing-3.1.0";
     File file1 = new File(path1);
     File file2 = new File(path2);
 

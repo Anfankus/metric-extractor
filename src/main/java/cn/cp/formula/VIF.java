@@ -36,45 +36,6 @@ public class VIF {
     this.attrIndex = attrIndex;
   }
 
-  public static void main(String[] args) {
-    String fileName = "C:\\Users\\38110\\Desktop\\datasets\\regression-datasets\\regression-datasets\\fried.arff";
-    int attrIndex = -1;
-    VIF vif = null;
-    boolean verbose = false;
-
-    for (int i = 0; i < args.length; i++) {
-      switch (args[i]) {
-        case "-f":
-          fileName = args[++i];
-          i++;
-          break;
-        case "-v":
-          verbose = true;
-          break;
-        default:
-          attrIndex = new Integer(args[i]);
-          break;
-      }
-    }
-    try {
-      if (attrIndex != -1) {
-        vif = new VIF(fileName, attrIndex);
-      } else {
-        vif = new VIF(fileName);
-      }
-    } catch (IOException ioex) {
-      ioex.printStackTrace();
-    }
-    if (verbose) {
-      vif.setVerbose(verbose);
-    }
-    try {
-      double[] result = vif.getVIFs();
-      System.out.println(Arrays.toString(result));
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-  }
 
   public double[] getVIFs() throws Exception {
     return calculateVIF(instances, attrIndex);
@@ -115,6 +76,46 @@ public class VIF {
   public void setVerbose(boolean verbose) {
     this.verbose = verbose;
   }
+  public static void main(String[] args) {
+    String fileName = "tempoutput/zxing 3.1.0.arff";
+    int attrIndex = -1;
+    VIF vif = null;
+    boolean verbose = true;
+
+    for (int i = 0; i < args.length; i++) {
+      switch (args[i]) {
+        case "-f":
+          fileName = args[++i];
+          i++;
+          break;
+        case "-v":
+          verbose = true;
+          break;
+        default:
+          attrIndex = new Integer(args[i]);
+          break;
+      }
+    }
+    try {
+      if (attrIndex != -1) {
+        vif = new VIF(fileName, attrIndex);
+      } else {
+        vif = new VIF(fileName);
+      }
+    } catch (IOException ioex) {
+      ioex.printStackTrace();
+    }
+    if (verbose) {
+      vif.setVerbose(verbose);
+    }
+    try {
+      double[] result = vif.getVIFs();
+      System.out.println(Arrays.toString(result));
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+  }
+
 }
 
 class AccessibleLinearRegression extends LinearRegression {

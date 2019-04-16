@@ -27,6 +27,13 @@
     </build>
 
     <dependencies>
+      <!-- https://mvnrepository.com/artifact/net.sourceforge.javacsv/javacsv -->
+      <dependency>
+        <groupId>net.sourceforge.javacsv</groupId>
+        <artifactId>javacsv</artifactId>
+        <version>2.0</version>
+      </dependency>
+
       <!-- https://mvnrepository.com/artifact/com.github.gumtreediff/core -->
       <dependency>
         <groupId>com.github.gumtreediff</groupId>
@@ -40,23 +47,11 @@
         <artifactId>spoon-core</artifactId>
         <version>7.1.0</version>
       </dependency>
-
-      <!-- https://mvnrepository.com/artifact/org.jfree/jfreechart -->
-    <dependency>
-      <groupId>org.jfree</groupId>
-      <artifactId>jfreechart</artifactId>
-      <version>1.0.19</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka/weka-stable -->
+      <!-- https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka/weka-stable -->
     <dependency>
       <groupId>nz.ac.waikato.cms.weka</groupId>
       <artifactId>weka-stable</artifactId>
       <version>3.8.3</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.mauricioaniche</groupId>
-      <artifactId>ck</artifactId>
-      <version>0.2.0</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

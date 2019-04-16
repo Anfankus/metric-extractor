@@ -18,6 +18,7 @@ import weka.core.converters.ConverterUtils.DataSource;
 /**
  * 代表一个项目多个版本的所有度量值，包括计算后得到的各版本各类的度量值，各类的变化率和变化率的预测模型
  */
+
 public class MultiVersionMetrics {
 
   public List<SingleVersionMetrics> getMetrics() {
@@ -38,6 +39,8 @@ public class MultiVersionMetrics {
   /**
    * @return 以类为key，变化率为value的Map
    * @param outputfile 是否输出为文件，输出目录为项目根目录
+   *
+   * 目前没用
    */
   public HashMap<String, ArrayList<Double>> getChangeRate(boolean outputfile) {
     if (changeRateCached == null) {
@@ -112,12 +115,15 @@ public class MultiVersionMetrics {
    * 两两计算版本变化与否，最后一个版本不计算
    */
   public void getChangeValue() throws Exception {
+
+    //逐版本遍历
     for (int i = 1; i < metrics.size(); i++) {
       SingleVersionMetrics currentVer = getMetrics().get(i - 1),
           behindVer = getMetrics().get(i);
 
+      //提取两版本的变化值
       TwoVersComparator comparator = new TwoVersComparator();
-      comparator.compare(new File(currentVer._filePath), new File(behindVer._filePath));
+      comparator.compare(new File(currentVer.originFilePath), new File(behindVer.originFilePath));
       HashMap<String, Diff> diffs = comparator.getDiffs();
 
       //计算中位数
@@ -135,7 +141,7 @@ public class MultiVersionMetrics {
         if (currentClass != null) {
           currentClass.setChange(changeVal, changeVal > midVal);
         } else {
-          System.out.println("类未找到:" + currentClassName);
+          System.out.println("类未找到:" + currentClassName + currentVer.getVersion());
         }
       }//end for
     }//end for
@@ -145,7 +151,8 @@ public class MultiVersionMetrics {
     if(!(f.exists()&&f.isDirectory()))
       f.mkdir();
     for(SingleVersionMetrics eachVer:metrics){
-      String path=rootPath+"/"+eachVer.getProjectName()+" "+eachVer.getVersion()+".csv";
+      String path =
+          rootPath + "/" + eachVer.getProjectName() + " " + eachVer.getVersion() + ".arff";
       eachVer.printFile(path);
     }
   }
