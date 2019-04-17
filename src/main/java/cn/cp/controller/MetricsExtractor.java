@@ -40,8 +40,7 @@ public class MetricsExtractor {
    * @param s 度量计算结束之后调用的回调函数
    * @throws InvalidObjectException 输入路径不全是目录的时候抛出
    */
-  public void doExtract(Consumer<MetricsExtractor> s)
-      throws InvalidObjectException {
+  public MetricsExtractor doExtract() throws InvalidObjectException {
     if (!checkPaths()) {
       throw new InvalidObjectException("输入路径不全是目录");
     }
@@ -57,13 +56,11 @@ public class MetricsExtractor {
       try {
         metrics.getChangeValue();
       } catch (Exception x) {
-        System.out.println("版本对比异常" + x);
+        x.printStackTrace();
       }
       resultCached = metrics;
-      s.accept(this);
-    } else {
-      s.accept(this);
     }
+    return this;
   }
 
 

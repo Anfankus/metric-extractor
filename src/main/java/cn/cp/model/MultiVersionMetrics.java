@@ -2,13 +2,15 @@ package cn.cp.model;
 
 
 import cn.cp.controller.TwoVersComparator;
-import gumtree.spoon.diff.Diff;
+import cn.edu.seu.aggregation.ClassDiffEntity;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import weka.classifiers.functions.LinearRegression;
 import weka.core.Attribute;
@@ -42,6 +44,7 @@ public class MultiVersionMetrics {
    *
    * 目前没用
    */
+  @Deprecated
   public HashMap<String, ArrayList<Double>> getChangeRate(boolean outputfile) {
     if (changeRateCached == null) {
       HashMap<String, ArrayList<Double>> res = new HashMap<>();
@@ -106,37 +109,32 @@ public class MultiVersionMetrics {
     return changeRateCached;
   }
 
-  public HashMap<String, ArrayList<Double>> getChangeRate() {
-    return getChangeRate(false);
-  }
-
-
   /**
    * 两两计算版本变化与否，最后一个版本不计算
    */
   public void getChangeValue() throws Exception {
 
     //逐版本遍历
-    for (int i = 1; i < metrics.size(); i++) {
-      SingleVersionMetrics currentVer = getMetrics().get(i - 1),
-          behindVer = getMetrics().get(i);
+    for (int i = 0; i < metrics.size() - 1; i++) {
+      SingleVersionMetrics currentVer = getMetrics().get(i),
+          behindVer = getMetrics().get(i + 1);
 
       //提取两版本的变化值
       TwoVersComparator comparator = new TwoVersComparator();
       comparator.compare(new File(currentVer.originFilePath), new File(behindVer.originFilePath));
-      HashMap<String, Diff> diffs = comparator.getDiffs();
+      HashMap<ClassDiffEntity, Integer> diffs = comparator.getDiffs();
 
       //计算中位数
-      List<Diff> sortedVal = diffs.values()
+      List<Entry<ClassDiffEntity, Integer>> sortedVal = diffs.entrySet()
           .stream()
-          .sorted((a, b) -> a.getRootOperations().size() - b.getRootOperations().size())
+          .sorted(Comparator.comparingInt(Entry::getValue))
           .collect(Collectors.toList());
-      int midVal = sortedVal.get(sortedVal.size() / 2).getRootOperations().size();
+      int midVal = sortedVal.get(sortedVal.size() / 2).getValue();
 
       //将变更值放入相应的类
-      for (Map.Entry<String, Diff> each : diffs.entrySet()) {
-        String currentClassName = each.getKey();
-        int changeVal = each.getValue().getRootOperations().size();
+      for (Map.Entry<ClassDiffEntity, Integer> each : diffs.entrySet()) {
+        String currentClassName = each.getKey().newFullClassName;
+        int changeVal = each.getValue();
         SingleClassAllMetrics currentClass = currentVer.getMetrics().get(currentClassName);
         if (currentClass != null) {
           currentClass.setChange(changeVal, changeVal > midVal);
@@ -144,6 +142,15 @@ public class MultiVersionMetrics {
           System.out.println("类未找到:" + currentClassName + currentVer.getVersion());
         }
       }//end for
+      for (String className : comparator.getUnchanged()) {
+        SingleClassAllMetrics currentClass = currentVer.getMetrics().get(className);
+        if (currentClass != null) {
+          currentClass.setChange(0, false);
+        } else {
+          System.out.println("类未找到:" + className + currentVer.getVersion());
+        }
+      }
+
     }//end for
   }
   public void print2Direcory(String rootPath)throws Exception{
