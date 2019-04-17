@@ -433,6 +433,7 @@ public class JavaASTHelper implements ASTHelper<JavaStructureNode> {
   @Override
   public List<String> getClassName() {
     return Arrays.stream(this.fCompilation.getCompilationUnit().types)
+        .filter(each -> !new String(each.name).contains("-"))
         .map(each ->
             this.fCompilation.getCompilationUnit().currentPackage.toString() + '.' + new String(
                 each.name))

@@ -97,17 +97,15 @@ public class TwoVersComparator {
           leftFile.getAbsolutePath(),
           rightFile.getAbsolutePath());
 
-      int flag = 0;
-      for (ClassDiffEntity e : classDiffEntities) {
+      if (classDiffEntities.isEmpty()) {
+        this.unchanged.addAll(distiller.getNewVerClassName());
+      } else
+        for (ClassDiffEntity e : classDiffEntities) {
         int sum = 0;
-        flag++;
         for (SourceCodeChange eachChange : e.allSourceCodeChanges) {
           sum += eachChange.getChangeType().getSignificance().value();
         }
         this.diffs.put(e, sum);
-      }
-      if (flag == 0) {
-        this.unchanged.addAll(distiller.getNewVerClassName());
       }
     }
   }

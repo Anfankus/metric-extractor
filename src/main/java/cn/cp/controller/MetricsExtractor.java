@@ -37,7 +37,6 @@ public class MetricsExtractor {
   /**
    * 计算度量值调用的方法，将给定的路径作为待测项目根目录，计算ck值
    *
-   * @param s 度量计算结束之后调用的回调函数
    * @throws InvalidObjectException 输入路径不全是目录的时候抛出
    */
   public MetricsExtractor doExtract() throws InvalidObjectException {
