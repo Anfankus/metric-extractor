@@ -1,14 +1,22 @@
+import ch.uzh.ifi.seal.changedistiller.ChangeDistiller;
+import ch.uzh.ifi.seal.changedistiller.ChangeDistiller.Language;
+import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
 import cn.cp.controller.MetricsExtractor;
-import gumtree.spoon.AstComparator;
+import cn.edu.seu.aggregation.ChangeAggregation;
+import cn.edu.seu.aggregation.ClassDiffEntity;
+import cn.edu.seu.aggregation.MethodDiffEntity;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 
 public class TestModel {
 
   String[] paths;
+
   @Before
   public void setPaths() {
     String[] zxings = new String[]{
@@ -19,6 +27,10 @@ public class TestModel {
         "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.3.1"
     };
     String[] junits = new String[]{
+        "C:\\Users\\Thinkpad\\Desktop\\变更预测\\JCM\\junit4-r3.8.2",
+        "C:\\Users\\Thinkpad\\Desktop\\变更预测\\JCM\\junit4-r4.9b3"
+    };
+    junits = new String[]{
         "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.6",
         "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.8",
         "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.9",
@@ -34,15 +46,7 @@ public class TestModel {
   @Test
   public void calculateMetric() throws Exception {
     MetricsExtractor m = new MetricsExtractor(paths);
-    m.doExtract(x -> {
-      //x为计算度量完成后的结果
-      try {
-        //获取所有度量值并保存至目录
-        x.getMetrics().print2Direcory("tempoutput");
-      } catch (Exception ex) {
-        ex.printStackTrace();
-      }
-    });
+    m.doExtract().getMetrics().print2Direcory("tempoutput");
   }
 
   /**
@@ -53,17 +57,70 @@ public class TestModel {
 //    InputStream train = TestModel.class.getResourceAsStream("/zxing 3.0.0.arff");
 //    InputStream test = TestModel.class.getResourceAsStream("/zxing 3.1.0.arff");
 //    new MetricsExtractor(paths).useJ48(train,test);
+    Map<String,Object> result;
+    Map<String,Object> result1 =new MetricsExtractor(paths).useSVM(new FileInputStream("C:\\Users\\Thinkpad\\Desktop\\变更预测\\Metrics-master0.2\\Metrics-master\\src\\test\\resources\\zxing 3.0.0.arff"),
+        new FileInputStream("C:\\Users\\Thinkpad\\Desktop\\变更预测\\Metrics-master0.2\\Metrics-master\\src\\test\\resources\\zxing 3.1.0.arff"));
 
-    new MetricsExtractor(paths).useBayes(new FileInputStream("tempoutput/zxing 3.0.0.arff"),
-        new FileInputStream("tempoutput/zxing 3.1.0.arff"));
+    result=result1;
+    Map<String,Object> result2 =new MetricsExtractor(paths).useBayes(new FileInputStream("C:\\Users\\Thinkpad\\Desktop\\变更预测\\Metrics-master0.2\\Metrics-master\\src\\test\\resources\\zxing 3.0.0.arff"),
+        new FileInputStream("C:\\Users\\Thinkpad\\Desktop\\变更预测\\Metrics-master0.2\\Metrics-master\\src\\test\\resources\\zxing 3.1.0.arff"));
+
+    if(Double.parseDouble(result.get("recall").toString())<Double.parseDouble(result1.get("recall").toString())) {
+      result=result2;
+    }
+
+    Map<String,Object> result3 =new MetricsExtractor(paths).useJ48(new FileInputStream("C:\\Users\\Thinkpad\\Desktop\\变更预测\\Metrics-master0.2\\Metrics-master\\src\\test\\resources\\zxing 3.0.0.arff"),
+        new FileInputStream("C:\\Users\\Thinkpad\\Desktop\\变更预测\\Metrics-master0.2\\Metrics-master\\src\\test\\resources\\zxing 3.1.0.arff"));
+
+    if(Double.parseDouble(result.get("recall").toString())<Double.parseDouble(result3.get("recall").toString())) {
+      result=result3;
+    }
+    Map<String,Object> result4 =new MetricsExtractor(paths).useLogistic(new FileInputStream("C:\\Users\\Thinkpad\\Desktop\\变更预测\\Metrics-master0.2\\Metrics-master\\src\\test\\resources\\zxing 3.0.0.arff"),
+        new FileInputStream("C:\\Users\\Thinkpad\\Desktop\\变更预测\\Metrics-master0.2\\Metrics-master\\src\\test\\resources\\zxing 3.1.0.arff"));
+
+    if(Double.parseDouble(result.get("recall").toString())<Double.parseDouble(result4.get("recall").toString())) {
+      result=result4;
+    }
+    System.out.println("final recall : "+result.get("recall"));
+
+
   }
 
   @Test
-  public void gumtree() throws Exception {
-    String file1 = "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.6\\src\\main\\java\\org\\junit\\runner\\Description.java";
-    String file2 = "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.8\\src\\main\\java\\org\\junit\\runner\\Description.java";
+  public void changeDistiller() throws Exception {
+    String leftPath = "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.0.0\\android\\src\\com\\google\\zxing\\client\\android\\camera\\FrontLightMode.java";
+    String rightPath = "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.1.0\\android\\src\\com\\google\\zxing\\client\\android\\camera\\FrontLightMode.java";
 
-    new AstComparator().compare(new File(file1), new File(file2));
+    //leftPath = "F:/corpus/camel/camel#2010-05-23-03-22-49#camel-2.3.0#8a471f4/camel-core/src/main/java/org/apache/camel/processor/MulticastProcessor.java";
+    //rightPath = "F:/corpus/camel/camel#2011-01-25-05-49-08#camel-2.6.0#20f2898/camel-core/src/main/java/org/apache/camel/processor/MulticastProcessor.java";
 
+    File leftFile = new File(leftPath);
+    File rightFile = new File(rightPath);
+
+    System.out.println("left file:" + leftFile.getAbsolutePath());
+    System.out.println("right file:" + rightFile.getAbsolutePath() + "\n");
+
+    FileDistiller distiller = ChangeDistiller.createFileDistiller(Language.JAVA);
+
+    try {
+      distiller.extractClassifiedSourceCodeChanges(leftFile, "1.9", rightFile, "1.9");
+    } catch (Exception e) {
+      System.err.println("Warning: error while change distilling. " + e.getMessage());
+    }
+
+    //List<SourceCodeChange> sccList = distiller.getSourceCodeChanges();
+
+    List<ClassDiffEntity> classDiffEntities = ChangeAggregation
+        .doClassAggregation(distiller.getSourceCodeChanges2(), leftPath, rightPath);
+
+    for (ClassDiffEntity classDE : classDiffEntities) {
+      System.out.println("----class change----");
+      classDE.print();
+
+      for (MethodDiffEntity methodDE : classDE.listMethodDiffEntity) {
+        System.out.println("----method change----");
+        methodDE.print();
+      }
+    }
   }
 }
