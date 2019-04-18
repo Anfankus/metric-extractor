@@ -2,8 +2,7 @@ package cn.cp.controller;
 
 import ch.uzh.ifi.seal.changedistiller.ChangeDistiller;
 import ch.uzh.ifi.seal.changedistiller.ChangeDistiller.Language;
-import ch.uzh.ifi.seal.changedistiller.ast.ASTHelperFactory;
-import ch.uzh.ifi.seal.changedistiller.ast.java.JavaASTHelper;
+import ch.uzh.ifi.seal.changedistiller.ast.ASTHelper;
 import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 import cn.edu.seu.aggregation.ChangeAggregation;
@@ -14,60 +13,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.Data;
 
+@Data
 public class TwoVersComparator {
 
-  private HashMap<ClassDiffEntity, Integer> diffs;
-  private List<String> unchanged; //类名
-  private List<String> add;       //文件名
-  private List<String> deleted;   //文件名
+  private HashMap<ClassDiffEntity, Integer> diffs = new HashMap<>();
+  private List<String> unchanged = new ArrayList<>(); //类名
+  private List<String> add = new ArrayList<>();       //文件名
+  private List<String> deleted = new ArrayList<>();   //文件名
 
-  public TwoVersComparator() {
-    super();
-    add = new ArrayList<>();
-    deleted = new ArrayList<>();
-    unchanged = new ArrayList<>();
-    diffs = new HashMap<>();
-  }
 
-  public static void main(String[] args) throws Exception {
-    String path1 = "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.0.0";
-    String path2 = "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.1.0";
-    File file1 = new File(path1);
-    File file2 = new File(path2);
-
-    TwoVersComparator comparator = new TwoVersComparator();
-    comparator.compare(file1, file2);
-    HashMap<ClassDiffEntity, Integer> map = comparator.getDiffs();
-
-    int i = 1;
-    for (Map.Entry<ClassDiffEntity, Integer> each : map.entrySet()) {
-      System.out.println((i++) + each.getKey().newFullClassName + ":" + each.getValue());
-    }
-    System.out.println("----------------------------------");
-    System.out.println("add:" + comparator.getAdd());
-    System.out.println("delete:" + comparator.getDeleted());
-  }
-
-  public HashMap<ClassDiffEntity, Integer> getDiffs() {
-    return diffs;
-  }
-
-  public List<String> getAdd() {
-    return add;
-  }
-
-  public List<String> getDeleted() {
-    return deleted;
-  }
-
-  public List<String> getUnchanged() {
-    return unchanged;
-  }
-
-  public void compare(File f1, File f2) throws Exception {
+  public void compare(File f1, File f2) {
     List<String> list1 = Arrays.asList(FileUtil.getAllJavaFiles(f1.getAbsolutePath()));
     list1 = list1.stream()
         .map(each -> each.substring(f1.getAbsolutePath().length())).collect(Collectors.toList());
@@ -80,11 +38,24 @@ public class TwoVersComparator {
     List<String> all = new ArrayList<>(list1);
     all.removeAll(list2);
 
-    deleted.addAll(all);
+    List<String> tempDel = new ArrayList<>(all);
     all.addAll(list2);
 
-    add.addAll(list2);
-    add.removeAll(list1);
+    List<String> tempAdd = new ArrayList<>(list2);
+    tempAdd.removeAll(list1);
+
+    for (String each : tempAdd) {
+      FileDistiller distiller = ChangeDistiller.createFileDistiller(Language.JAVA);
+      ASTHelper helper = distiller.getFactory()
+          .create(new File(f2.getAbsolutePath() + each), "1.8");
+      add.addAll(helper.getClassName());
+    }
+    for (String each : tempDel) {
+      FileDistiller distiller = ChangeDistiller.createFileDistiller(Language.JAVA);
+      ASTHelper helper = distiller.getFactory()
+          .create(new File(f1.getAbsolutePath() + each), "1.8");
+      add.addAll(helper.getClassName());
+    }
 
     for (String fileName : both) {
       File leftFile = new File(f1.getAbsolutePath() + fileName);
@@ -99,13 +70,14 @@ public class TwoVersComparator {
 
       if (classDiffEntities.isEmpty()) {
         this.unchanged.addAll(distiller.getNewVerClassName());
-      } else
+      } else {
         for (ClassDiffEntity e : classDiffEntities) {
-        int sum = 0;
-        for (SourceCodeChange eachChange : e.allSourceCodeChanges) {
-          sum += eachChange.getChangeType().getSignificance().value();
+          int sum = 0;
+          for (SourceCodeChange eachChange : e.allSourceCodeChanges) {
+            sum += eachChange.getChangeType().getSignificance().value();
+          }
+          this.diffs.put(e, sum);
         }
-        this.diffs.put(e, sum);
       }
     }
   }

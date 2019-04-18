@@ -3,21 +3,17 @@ package cn.cp.model;
 import cn.cp.formula.VIF;
 import com.github.mauricioaniche.ck.MetricReport;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import lombok.Data;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.SparseInstance;
 import weka.core.converters.ArffSaver;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Remove;
@@ -25,6 +21,7 @@ import weka.filters.unsupervised.attribute.Remove;
 /**
  * SingleVersionMetrics 对于单个版本的所有度量，实质是SingleClassAllMetrics的数组封装
  */
+@Data
 public class SingleVersionMetrics {
 
   private String version;
@@ -90,27 +87,6 @@ public class SingleVersionMetrics {
       }
     }
     return 0;
-  }
-
-  public String getVersion() {
-    return version;
-  }
-
-
-  public void setVersion(String version) {
-    this.version = version;
-  }
-
-  public String getProjectName() {
-    return ProjectName;
-  }
-
-  public void setProjectName(String projectName) {
-    ProjectName = projectName;
-  }
-
-  public Map<String, SingleClassAllMetrics> getMetrics() {
-    return metrics;
   }
 
 

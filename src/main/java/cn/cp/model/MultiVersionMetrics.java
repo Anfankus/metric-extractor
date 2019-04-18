@@ -4,7 +4,6 @@ package cn.cp.model;
 import cn.cp.controller.TwoVersComparator;
 import cn.edu.seu.aggregation.ClassDiffEntity;
 import java.io.File;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -12,107 +11,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import weka.classifiers.functions.LinearRegression;
-import weka.core.Attribute;
-import weka.core.Instances;
-import weka.core.converters.ConverterUtils.DataSource;
+import lombok.Data;
 
 /**
  * 代表一个项目多个版本的所有度量值，包括计算后得到的各版本各类的度量值，各类的变化率和变化率的预测模型
  */
-
+@Data
 public class MultiVersionMetrics {
 
-  public List<SingleVersionMetrics> getMetrics() {
-    return metrics;
-  }
-
-  public void setMetrics(List<SingleVersionMetrics> metrics) {
-    this.metrics = metrics;
-  }
-
   private List<SingleVersionMetrics> metrics;
-  private HashMap<String, ArrayList<Double>> changeRateCached;
+  private List<TwoVersComparator> comparetors;
 
   public MultiVersionMetrics(List<SingleVersionMetrics> source) {
     metrics = source;
-    changeRateCached = null;
+    comparetors = new ArrayList<>();
   }
-  /**
-   * @return 以类为key，变化率为value的Map
-   * @param outputfile 是否输出为文件，输出目录为项目根目录
-   *
-   * 目前没用
-   */
-  @Deprecated
-  public HashMap<String, ArrayList<Double>> getChangeRate(boolean outputfile) {
-    if (changeRateCached == null) {
-      HashMap<String, ArrayList<Double>> res = new HashMap<>();
-
-      //className:metrics
-      HashMap<String, SingleClassAllMetrics> valuesForEachClass = new HashMap<>();
-      metrics.forEach(eachVersion -> {
-        //每个版本
-        for (SingleClassAllMetrics eachClass : eachVersion.getMetrics().values()) {
-          //单个版本每个类
-          if (valuesForEachClass.containsKey(eachClass.getClassName())) {
-            SingleClassAllMetrics last = valuesForEachClass.get(eachClass.getClassName());
-            Integer[] lastVal = last.getMetricsVal();
-            Integer[] currentVal = eachClass.getMetricsVal();
-
-//            double rateSum = 0.0;
-//            for (int i = 1; i < lastVal.length; i++) {
-//              if(lastVal[i]==0)
-//                rateSum+=1;
-//              else
-//                rateSum += (double)Math.abs(currentVal[i] - lastVal[i])/ lastVal[i];
-//            }
-//            double avgRate = rateSum / (lastVal.length - 1);
-
-
-            int changeValSum = 0;
-            int lastSum=0;
-            for (int i = 1; i < lastVal.length; i++) {
-              lastSum+=lastVal[i];
-              changeValSum += Math.abs(currentVal[i] - lastVal[i]);
-            }
-            double avgRate = (double)changeValSum /lastSum;
-
-
-            if (res.containsKey(eachClass.getClassName())) {
-              res.get(eachClass.getClassName()).add(avgRate);
-            } else {
-              ArrayList<Double> ay = new ArrayList<>();
-              ay.add(avgRate);
-              res.put(eachClass.getClassName(), ay);
-            }
-          }
-          valuesForEachClass.put(eachClass.getClassName(), eachClass);
-        }
-      });
-      changeRateCached=res;
-    }
-    if (outputfile) {
-      try {
-        PrintWriter ps = new PrintWriter("changeRate.csv");
-        changeRateCached.forEach((k, v) ->{
-          StringBuilder everyRow=new StringBuilder(k);
-          v.forEach(each->everyRow.append(',').append(String.format("%.4f",each)));
-          ps.println(everyRow);
-        });
-        ps.close();
-      } catch (Exception x) {
-        assert false;
-      }
-    }
-
-    return changeRateCached;
-  }
-
   /**
    * 两两计算版本变化与否，最后一个版本不计算
    */
-  public void getChangeValue() throws Exception {
+  public void getChangeValue() {
 
     //逐版本遍历
     for (int i = 0; i < metrics.size() - 1; i++) {
@@ -121,6 +38,7 @@ public class MultiVersionMetrics {
 
       //提取两版本的变化值
       TwoVersComparator comparator = new TwoVersComparator();
+      this.comparetors.add(comparator);
       comparator.compare(new File(currentVer.originFilePath), new File(behindVer.originFilePath));
       HashMap<ClassDiffEntity, Integer> diffs = comparator.getDiffs();
 
@@ -142,6 +60,8 @@ public class MultiVersionMetrics {
           System.out.println("类未找到:" + currentClassName + currentVer.getVersion());
         }
       }//end for
+
+      //因为 diffs 里面没有未变化的类，这一部分把未变化的类也放进相应的SingleClassAllMetrics对象里
       for (String className : comparator.getUnchanged()) {
         SingleClassAllMetrics currentClass = currentVer.getMetrics().get(className);
         if (currentClass != null) {

@@ -1,6 +1,24 @@
 package ch.uzh.ifi.seal.changedistiller.distilling;
 
+import ch.uzh.ifi.seal.changedistiller.ast.ASTHelper;
+import ch.uzh.ifi.seal.changedistiller.ast.ASTHelperFactory;
+import ch.uzh.ifi.seal.changedistiller.distilling.refactoring.RefactoringCandidateProcessor;
+import ch.uzh.ifi.seal.changedistiller.model.entities.ClassHistory;
+import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
+import ch.uzh.ifi.seal.changedistiller.structuredifferencing.StructureDiffNode;
+import ch.uzh.ifi.seal.changedistiller.structuredifferencing.StructureDifferencer;
+import ch.uzh.ifi.seal.changedistiller.structuredifferencing.StructureNode;
+import com.google.inject.Inject;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /*
  * #%L
@@ -21,29 +39,6 @@ import java.io.BufferedReader;
  * limitations under the License.
  * #L%
  */
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.io.FileUtils;
-
-import com.google.inject.Inject;
-
-import ch.uzh.ifi.seal.changedistiller.ast.ASTHelper;
-import ch.uzh.ifi.seal.changedistiller.ast.ASTHelperFactory;
-import ch.uzh.ifi.seal.changedistiller.distilling.refactoring.RefactoringCandidateProcessor;
-import ch.uzh.ifi.seal.changedistiller.model.entities.ClassHistory;
-import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
-import ch.uzh.ifi.seal.changedistiller.structuredifferencing.StructureDiffNode;
-import ch.uzh.ifi.seal.changedistiller.structuredifferencing.StructureDifferencer;
-import ch.uzh.ifi.seal.changedistiller.structuredifferencing.StructureNode;
 
 
 /**
@@ -186,6 +181,10 @@ public class FileDistiller {
 
   public Map<String, List<SourceCodeChange>> getSourceCodeChanges2() {
     return this.lFullTopClassToSourcCodeChanges;
+  }
+
+  public ASTHelperFactory getFactory() {
+    return this.fASTHelperFactory;
   }
 
   public ClassHistory getClassHistory() {
