@@ -23,13 +23,7 @@ import weka.core.converters.ConverterUtils.DataSource;
 
 public class MultiVersionMetrics {
 
-  public List<SingleVersionMetrics> getMetrics() {
-    return metrics;
-  }
 
-  public void setMetrics(List<SingleVersionMetrics> metrics) {
-    this.metrics = metrics;
-  }
 
   private List<SingleVersionMetrics> metrics;
   private HashMap<String, ArrayList<Double>> changeRateCached;
@@ -37,6 +31,12 @@ public class MultiVersionMetrics {
   public MultiVersionMetrics(List<SingleVersionMetrics> source) {
     metrics = source;
     changeRateCached = null;
+  }
+  public List<SingleVersionMetrics> getMetrics() {
+    return metrics;
+  }
+  public void setMetrics(List<SingleVersionMetrics> metrics) {
+    this.metrics = metrics;
   }
   /**
    * @return 以类为key，变化率为value的Map
@@ -152,6 +152,7 @@ public class MultiVersionMetrics {
       }
 
     }//end for
+    int a2=0;
   }
   public void print2Direcory(String rootPath)throws Exception{
     File f=new File(rootPath);
