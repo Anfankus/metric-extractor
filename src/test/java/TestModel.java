@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,9 +21,6 @@ public class TestModel {
     String[] zxings = new String[]{
         "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.0.0",
         "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.1.0",
-        "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.2.0",
-        "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.3.0",
-        "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.3.1"
     };
     String[] junits = new String[]{
         "C:\\Users\\Thinkpad\\Desktop\\变更预测\\JCM\\junit4-r3.8.2",
@@ -37,7 +33,7 @@ public class TestModel {
         "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.10"
     };
 
-    paths = junits;
+    paths = zxings;
   }
 
   /**
@@ -46,7 +42,7 @@ public class TestModel {
   @Test
   public void calculateMetric() throws Exception {
     MetricsExtractor m = new MetricsExtractor(paths);
-    m.doExtract().getMetrics().print2Direcory("tempoutput");
+    m.doExtract().doPredict();
   }
 
   /**
