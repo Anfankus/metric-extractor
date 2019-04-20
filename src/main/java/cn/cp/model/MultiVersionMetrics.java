@@ -2,7 +2,6 @@ package cn.cp.model;
 
 
 import cn.cp.controller.TwoVersComparator;
-import cn.edu.seu.aggregation.ClassDiffEntity;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -42,18 +41,18 @@ public class MultiVersionMetrics {
       TwoVersComparator comparator = new TwoVersComparator();
       this.comparetors.add(comparator);
       comparator.compare(new File(currentVer.originFilePath), new File(behindVer.originFilePath));
-      HashMap<ClassDiffEntity, Integer> diffs = comparator.getDiffs();
+      HashMap<String, Integer> diffs = comparator.getDiffs();
 
       //计算中位数
-      List<Entry<ClassDiffEntity, Integer>> sortedVal = diffs.entrySet()
+      List<Entry<String, Integer>> sortedVal = diffs.entrySet()
           .stream()
           .sorted(Comparator.comparingInt(Entry::getValue))
           .collect(Collectors.toList());
       int midVal = sortedVal.get(sortedVal.size() / 2).getValue();
 
       //将变更值放入相应的类
-      for (Map.Entry<ClassDiffEntity, Integer> each : diffs.entrySet()) {
-        String currentClassName = each.getKey().newFullClassName;
+      for (Map.Entry<String, Integer> each : diffs.entrySet()) {
+        String currentClassName = each.getKey();
         int changeVal = each.getValue();
         SingleClassAllMetrics currentClass = currentVer.getMetrics().get(currentClassName);
         if (currentClass != null) {
@@ -68,6 +67,7 @@ public class MultiVersionMetrics {
         SingleClassAllMetrics currentClass = currentVer.getMetrics().get(className);
         if (currentClass != null) {
           currentClass.setChange(0, false);
+          currentClass.setChangeType(ChangeType.unchanged);
         } else {
           System.out.println("类未找到:" + className + currentVer.getVersion());
         }

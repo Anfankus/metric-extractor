@@ -1,9 +1,8 @@
 package cn.edu.seu.aggregation;
 
+import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 import java.util.ArrayList;
 import java.util.List;
-
-import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 
 
 public class MethodDiffEntity {
@@ -39,7 +38,7 @@ public class MethodDiffEntity {
 			//System.out.println("parent name:" + scc.getParentEntity().getUniqueName());
 			//System.out.println("entity type:" + scc.getChangedEntity().getType().name());
 			System.out.println("change type:" + scc.getChangeType());
-			//System.out.println("changed's entity name:" + scc.getChangedEntity().getUniqueName() + "\n");
+			//System.out.println("updated's entity name:" + scc.getChangedEntity().getUniqueName() + "\n");
 		}*/
   }
 }

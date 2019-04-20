@@ -20,10 +20,6 @@ package ch.uzh.ifi.seal.changedistiller.ast.java;
  * #L%
  */
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import ch.uzh.ifi.seal.changedistiller.distilling.SourceCodeChangeClassifier;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.ChangeType;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.EntityType;
@@ -35,6 +31,9 @@ import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeEntity;
 import ch.uzh.ifi.seal.changedistiller.model.entities.StructureEntityVersion;
 import ch.uzh.ifi.seal.changedistiller.model.entities.Update;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Implementation of {@link SourceCodeChangeClassifier} for the Java language.
@@ -372,7 +371,7 @@ public class JavaSourceCodeChangeClassifier implements SourceCodeChangeClassifie
   private SourceCodeChange extractParameterChange(Insert insert) {
     SourceCodeChange result = null;
     if (insert.getChangedEntity().getType() == JavaEntityType.PARAMETER) {
-      // SingleVariableDeclaration has changed, but the type node (child)
+      // SingleVariableDeclaration has updated, but the type node (child)
       // remains the same => PARAMETER_RENAMING
       Move mov =
           findMoveOperation(

@@ -19,7 +19,7 @@ import lombok.Data;
 @Data
 public class TwoVersComparator {
 
-  private HashMap<ClassDiffEntity, Integer> diffs = new HashMap<>();
+  private HashMap<String, Integer> diffs = new HashMap<>();
   private List<String> unchanged = new ArrayList<>(); //类名
   private List<String> add = new ArrayList<>();       //文件名
   private List<String> deleted = new ArrayList<>();   //文件名
@@ -50,11 +50,12 @@ public class TwoVersComparator {
           .create(new File(f2.getAbsolutePath() + each), "1.8");
       add.addAll(helper.getClassName());
     }
+
     for (String each : tempDel) {
       FileDistiller distiller = ChangeDistiller.createFileDistiller(Language.JAVA);
       ASTHelper helper = distiller.getFactory()
           .create(new File(f1.getAbsolutePath() + each), "1.8");
-      add.addAll(helper.getClassName());
+      deleted.addAll(helper.getClassName());
     }
 
     for (String fileName : both) {
@@ -76,7 +77,7 @@ public class TwoVersComparator {
           for (SourceCodeChange eachChange : e.allSourceCodeChanges) {
             sum += eachChange.getChangeType().getSignificance().value();
           }
-          this.diffs.put(e, sum);
+          this.diffs.put(e.newFullClassName, sum);
         }
       }
     }

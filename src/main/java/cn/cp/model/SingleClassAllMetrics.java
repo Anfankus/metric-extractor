@@ -12,6 +12,7 @@ public class SingleClassAllMetrics {
   private String className;
   private MetricValue metrics;
   private Boolean ischanged;
+  private ChangeType changeType;
   private Integer changeValue;
 
   public SingleClassAllMetrics(MetricValue source) {
@@ -48,6 +49,7 @@ public class SingleClassAllMetrics {
   public void setChange(int val, boolean change) {
     changeValue = val;
     ischanged = change;
+    changeType = ChangeType.updated;
   }
   public Object[] getChange() {
     return new Object[]{ischanged, changeValue};

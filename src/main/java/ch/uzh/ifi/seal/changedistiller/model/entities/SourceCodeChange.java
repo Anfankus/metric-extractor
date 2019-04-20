@@ -20,11 +20,10 @@ package ch.uzh.ifi.seal.changedistiller.model.entities;
  * #L%
  */
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.ChangeType;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * General (abstract) representation of a source code change.
@@ -36,7 +35,7 @@ import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
  * changes was made. The <code>rootEntity</code> is taken from the right AST, i.e., new version of
  * the {@link StructureEntityVersion}.</li>
  * <li>{@link SourceCodeEntity} <code>changedEntity</code> that describes which source code entity
- * has changed. In case
+ * has updated. In case
  * of
  * <ul>
  * <li>{@link Delete}: the entity that was deleted; it is taken from the left AST, i.e., old
@@ -83,7 +82,7 @@ public class SourceCodeChange {
   /**
    * Creates a new source code change.
    *
-   * @param changedEntity the changed entity
+   * @param changedEntity the updated entity
    * @param parentEntity the parent entity
    * @param rootEntity the root entity
    * @param changeType the change type
