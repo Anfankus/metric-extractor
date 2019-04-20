@@ -1,5 +1,6 @@
 package cn.cp.controller;
 
+import cn.cp.model.ChangeType;
 import cn.cp.model.MultiVersionMetrics;
 import cn.cp.model.SingleClassAllMetrics;
 import cn.cp.model.SingleVersionMetrics;
@@ -57,6 +58,21 @@ public class MetricsExtractor {
               .collect(Collectors.toList())
       );
       metrics.getChangeValue();
+      for (String eachClass : metrics.getComparetors().get(0).getAdd()) {
+        SingleClassAllMetrics s = metrics.getMetrics().get(1).getMetrics().get(eachClass);
+        if (s != null) {
+          s.setChangeType(ChangeType.add);
+        }
+      }
+
+      for (String eachClass : metrics.getComparetors().get(0).getDeleted()) {
+        SingleClassAllMetrics s = metrics.getMetrics().get(0).getMetrics().get(eachClass);
+        if (s != null) {
+          s.setChangeType(ChangeType.deleted);
+        } else {
+          System.out.println(eachClass);
+        }
+      }
       resultCached = metrics;
     }
     return this;
@@ -90,7 +106,6 @@ public class MetricsExtractor {
       result[1] = ret;
       return result;
     } else {
-
     }
     return null;
   }
