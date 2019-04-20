@@ -2,17 +2,13 @@ import ch.uzh.ifi.seal.changedistiller.ChangeDistiller;
 import ch.uzh.ifi.seal.changedistiller.ChangeDistiller.Language;
 import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
 import cn.cp.controller.MetricsExtractor;
-import cn.cp.model.SingleClassAllMetrics;
 import cn.edu.seu.aggregation.ChangeAggregation;
 import cn.edu.seu.aggregation.ClassDiffEntity;
 import cn.edu.seu.aggregation.MethodDiffEntity;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,23 +21,19 @@ public class TestModel {
     String[] zxings = new String[]{
         "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.0.0",
         "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.1.0",
-        "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.2.0",
-        "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.3.0",
-        "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.3.1"
     };
     String[] junits = new String[]{
         "C:\\Users\\Thinkpad\\Desktop\\变更预测\\JCM\\junit4-r3.8.2",
         "C:\\Users\\Thinkpad\\Desktop\\变更预测\\JCM\\junit4-r4.9b3"
     };
     junits = new String[]{
-        "/Users/lijiaxing/Downloads/junit/junit4-r4.8",
-        "/Users/lijiaxing/Downloads/junit/junit4-r4.9",
-        "/Users/lijiaxing/Downloads/junit/junit4-r4.10",
-        "/Users/lijiaxing/Downloads/junit/junit4-r4.11",
-        "/Users/lijiaxing/Downloads/junit/junit4-r4.12"
+        "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.6",
+        "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.8",
+        "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.9",
+        "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.10"
     };
 
-    paths = junits;
+    paths = zxings;
   }
 
   /**
@@ -50,22 +42,7 @@ public class TestModel {
   @Test
   public void calculateMetric() throws Exception {
     MetricsExtractor m = new MetricsExtractor(paths);
-    m.doExtract().getResultCached().print2Direcory("tempoutput");
-    for(int i=0;i<paths.length;i++){
-      String[] head={"className","type","changeValue","changeType","dit","noc","wmc","cbo","cbo",
-              "lcom","rfc","nom","nopm","nosm","nof","nopf","nosf","nosi","loc"};
-      ArrayList<ArrayList<String>> data_2=new ArrayList<>();
-      Iterator iterator=m.getResultCached().getMetrics().get(i).getMetrics().entrySet().iterator();
-      while(iterator.hasNext()){
-        Map.Entry entry=(Map.Entry) iterator.next();
-        SingleClassAllMetrics s= (SingleClassAllMetrics) entry.getValue();
-        ArrayList<String> temp=new ArrayList<>();
-        temp.add((String) entry.getKey());
-        temp.add(s.getMetrics().getType());
-
-      }
-    }
-    int a=0;
+    m.doExtract().doPredict();
   }
 
   /**

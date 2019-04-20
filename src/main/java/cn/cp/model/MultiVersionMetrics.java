@@ -20,6 +20,8 @@ import lombok.Data;
 public class MultiVersionMetrics {
 
   private List<SingleVersionMetrics> metrics;
+
+  //存放两个版本之间代码变化，包含不变的类、增加的类、减少的类等的类名
   private List<TwoVersComparator> comparetors;
 
   public MultiVersionMetrics(List<SingleVersionMetrics> source) {
