@@ -3,16 +3,14 @@ import ch.uzh.ifi.seal.changedistiller.ChangeDistiller;
 import ch.uzh.ifi.seal.changedistiller.ChangeDistiller.Language;
 import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
 import cn.cp.controller.MetricsExtractor;
+import cn.cp.model.SingleClassAllMetrics;
 import cn.edu.seu.aggregation.ChangeAggregation;
 import cn.edu.seu.aggregation.ClassDiffEntity;
 import cn.edu.seu.aggregation.MethodDiffEntity;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InvalidObjectException;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class MetricJson {
      public Data data=new Data();
@@ -31,17 +29,63 @@ public class MetricJson {
 
      public void calculateMetrics(String [] paths) throws Exception {
          MetricsExtractor m = new MetricsExtractor(paths);
-         m.doExtract().getMetrics().print2Direcory("tempoutput");
-         for(int i=0;)
+         m.doExtract();
+         for(int i=0;i<paths.length;i++){
+             ArrayList<Data.VersionInfo.Basic> basic=new ArrayList<>();
+             String[] head={"className","type","changeValue","changeType","dit","noc","wmc","cbo",
+                            "lcom","rfc","nom","nopm","nosm","nof","nopf","nosf","nosi","loc"};
+             ArrayList<ArrayList<String>> data_2=new ArrayList<>();
+             Iterator iterator=m.getResultCached().getMetrics().get(i).getMetrics().entrySet().iterator();
+             while(iterator.hasNext()){
+                 Map.Entry entry=(Map.Entry) iterator.next();
+                 SingleClassAllMetrics s= (SingleClassAllMetrics) entry.getValue();
+                 ArrayList<String> temp=new ArrayList<>();
+                 temp.add((String) entry.getKey());
+                 temp.add(s.getMetrics().getType());
+                 if(i==0){
+                     temp.add("0");
+                     temp.add("null");
+                 }
+                 else {
+                     if(s.getIschanged()==null||s.getChangeValue()==null){
+                         temp.add("0");
+                         temp.add("null");
+                     }
+                     else {
+                         temp.add(s.getChangeValue().toString());
+                         temp.add(s.getIschanged().toString());
+                     }
+                 }
+                 temp.add(String.valueOf(s.getMetrics().getDit()));
+                 temp.add(String.valueOf(s.getMetrics().getNoc()));
+                 temp.add(String.valueOf(s.getMetrics().getWmc()));
+                 temp.add(String.valueOf(s.getMetrics().getCbo()));
+                 temp.add(String.valueOf(s.getMetrics().getLcom()));
+                 temp.add(String.valueOf(s.getMetrics().getRfc()));
+                 temp.add(String.valueOf(s.getMetrics().getNom()));
+                 temp.add(String.valueOf(s.getMetrics().getNopm()));
+                 temp.add(String.valueOf(s.getMetrics().getNosm()));
+                 temp.add(String.valueOf(s.getMetrics().getNof()));
+                 temp.add(String.valueOf(s.getMetrics().getNopf()));
+                 temp.add(String.valueOf(s.getMetrics().getNosf()));
+                 temp.add(String.valueOf(s.getMetrics().getNosi()));
+                 temp.add(String.valueOf(s.getMetrics().getLoc()));
+                 data_2.add(temp);
+             }
+
+             this.data.versionInfo.add(new Data.VersionInfo(m.getResultCached().getMetrics().get(i).getProjectName(),
+                                                            m.getResultCached().getMetrics().get(i).getVersion(),basic,
+                                                            new Data.VersionInfo.Metric(head,data_2)));
+         }
      }
 }
 
 class Data{
     static class VersionInfo{
         static class Metric{
-            public ArrayList<String> head;
+            public String[] head;
             public ArrayList<ArrayList<String>> data;
-            public Metric(ArrayList<String> h,ArrayList<ArrayList<String>> d){
+            public Metric(String[] h,ArrayList<ArrayList<String>> d){
                 this.head=h;
                 this.data=d;
             }

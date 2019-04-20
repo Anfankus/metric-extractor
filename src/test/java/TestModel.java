@@ -2,11 +2,14 @@ import ch.uzh.ifi.seal.changedistiller.ChangeDistiller;
 import ch.uzh.ifi.seal.changedistiller.ChangeDistiller.Language;
 import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
 import cn.cp.controller.MetricsExtractor;
+import cn.cp.model.SingleClassAllMetrics;
 import cn.edu.seu.aggregation.ChangeAggregation;
 import cn.edu.seu.aggregation.ClassDiffEntity;
 import cn.edu.seu.aggregation.MethodDiffEntity;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +50,21 @@ public class TestModel {
   @Test
   public void calculateMetric() throws Exception {
     MetricsExtractor m = new MetricsExtractor(paths);
-    m.doExtract().getMetrics().print2Direcory("tempoutput");
+    m.doExtract().getResultCached().print2Direcory("tempoutput");
+    for(int i=0;i<paths.length;i++){
+      String[] head={"className","type","changeValue","changeType","dit","noc","wmc","cbo","cbo",
+              "lcom","rfc","nom","nopm","nosm","nof","nopf","nosf","nosi","loc"};
+      ArrayList<ArrayList<String>> data_2=new ArrayList<>();
+      Iterator iterator=m.getResultCached().getMetrics().get(i).getMetrics().entrySet().iterator();
+      while(iterator.hasNext()){
+        Map.Entry entry=(Map.Entry) iterator.next();
+        SingleClassAllMetrics s= (SingleClassAllMetrics) entry.getValue();
+        ArrayList<String> temp=new ArrayList<>();
+        temp.add((String) entry.getKey());
+        temp.add(s.getMetrics().getType());
+
+      }
+    }
     int a=0;
   }
 

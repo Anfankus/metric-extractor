@@ -29,15 +29,21 @@ public class MyController {
     @RequestMapping("/getUse")
     public MetricJson getM() throws Exception {
         MetricJson m=new MetricJson();
-        Data.VersionInfo.Basic b=new Data.VersionInfo.Basic("loc",11);
-        ArrayList<Data.VersionInfo.Basic> b1=new ArrayList<>();
-        b1.add(b);
-        ArrayList<String > h=new ArrayList<>();
-        h.add("classname");
-        h.add("noc");
-        ArrayList<ArrayList<String >> h1=new ArrayList<>();
-        h1.add(h);
-        m.data.versionInfo.add(new Data.VersionInfo("junit","4.8",b1,new Data.VersionInfo.Metric(h,h1)));
+        paths=new String[]{
+                "/Users/lijiaxing/Downloads/junit/junit4-r4.8",
+                "/Users/lijiaxing/Downloads/junit/junit4-r4.9",
+                "/Users/lijiaxing/Downloads/junit/junit4-r4.10",
+                "/Users/lijiaxing/Downloads/junit/junit4-r4.11",
+                "/Users/lijiaxing/Downloads/junit/junit4-r4.12"
+        };
+        m.calculateMetrics(paths);
+//        Data.VersionInfo.Basic b=new Data.VersionInfo.Basic("loc",11);
+//        ArrayList<Data.VersionInfo.Basic> b1=new ArrayList<>();
+//        b1.add(b);
+//        String [] h={"className","type","changeValue","changeType","dit","noc","wmc","cbo","cbo",
+//                "lcom","rfc","nom","nopm","nosm","nof","nopf","nosf","nosi","loc"};
+//        ArrayList<ArrayList<String >> h1=new ArrayList<>();
+//        m.data.versionInfo.add(new Data.VersionInfo("junit","4.8",b1,new Data.VersionInfo.Metric(h,h1)));
 
         return m;
     }
