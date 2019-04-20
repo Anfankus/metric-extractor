@@ -3,51 +3,44 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.3.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+      </plugin>
+    </plugins>
+  </build>
   <groupId>CP</groupId>
   <artifactId>CP</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+  <dependencies>
+    <!-- https://mvnrepository.com/artifact/net.sourceforge.javacsv/javacsv -->
+    <dependency>
+      <artifactId>javacsv</artifactId>
+      <groupId>net.sourceforge.javacsv</groupId>
+      <version>2.0</version>
+    </dependency>
 
-    <dependencies>
-      <!-- https://mvnrepository.com/artifact/net.sourceforge.javacsv/javacsv -->
-      <dependency>
-        <groupId>net.sourceforge.javacsv</groupId>
-        <artifactId>javacsv</artifactId>
-        <version>2.0</version>
-      </dependency>
+    <!-- https://mvnrepository.com/artifact/com.github.gumtreediff/core -->
+    <dependency>
+      <artifactId>core</artifactId>
+      <groupId>com.github.gumtreediff</groupId>
+      <version>2.1.0</version>
+    </dependency>
 
-      <!-- https://mvnrepository.com/artifact/com.github.gumtreediff/core -->
-      <dependency>
-        <groupId>com.github.gumtreediff</groupId>
-        <artifactId>core</artifactId>
-        <version>2.1.0</version>
-      </dependency>
-
-      <!-- https://mvnrepository.com/artifact/fr.inria.gforge.spoon/spoon-core -->
-      <dependency>
-        <groupId>fr.inria.gforge.spoon</groupId>
-        <artifactId>spoon-core</artifactId>
-        <version>7.1.0</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka/weka-stable -->
+    <!-- https://mvnrepository.com/artifact/fr.inria.gforge.spoon/spoon-core -->
+    <dependency>
+      <artifactId>spoon-core</artifactId>
+      <groupId>fr.inria.gforge.spoon</groupId>
+      <version>7.1.0</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka/weka-stable -->
     <dependency>
       <groupId>nz.ac.waikato.cms.weka</groupId>
       <artifactId>weka-stable</artifactId>
@@ -59,62 +52,69 @@
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
-      <dependency>
-        <groupId>org.hamcrest</groupId>
-        <artifactId>hamcrest-all</artifactId>
-        <version>1.3</version>
-        <scope>test</scope>
-      </dependency>
+    <dependency>
+      <artifactId>hamcrest-all</artifactId>
+      <groupId>org.hamcrest</groupId>
+      <scope>test</scope>
+      <version>1.3</version>
+    </dependency>
 
-      <!-- Dependency Injection with Guice -->
-      <dependency>
-        <groupId>com.google.inject.extensions</groupId>
-        <artifactId>guice-assistedinject</artifactId>
-        <version>3.0</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
-      <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <version>1.18.6</version>
-        <scope>provided</scope>
-      </dependency>
+    <!-- Dependency Injection with Guice -->
+    <dependency>
+      <artifactId>guice-assistedinject</artifactId>
+      <groupId>com.google.inject.extensions</groupId>
+      <version>3.0</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+    <dependency>
+      <artifactId>lombok</artifactId>
+      <groupId>org.projectlombok</groupId>
+      <scope>provided</scope>
+      <version>1.18.6</version>
+    </dependency>
 
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
+    <dependency>
+      <artifactId>jackson-core</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>jackson-databind</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <version>${jackson.version}</version>
+    </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>5.1.5.RELEASE</version>
-        </dependency>
-    </dependencies>
+    <dependency>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>logback-classic</artifactId>
+          <groupId>ch.qos.logback</groupId>
+        </exclusion>
+      </exclusions>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <artifactId>spring-web</artifactId>
+      <groupId>org.springframework</groupId>
+      <version>5.1.5.RELEASE</version>
+    </dependency>
+  </dependencies>
+
+  <parent>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <groupId>org.springframework.boot</groupId>
+    <relativePath/>
+    <version>2.1.3.RELEASE</version> <!-- lookup parent from repository -->
+  </parent>
 
 </project>

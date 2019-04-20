@@ -1,10 +1,7 @@
 package cn.cp.webserver;
 
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
 
 
 /**
@@ -26,15 +23,12 @@ public class MyController {
         return "index";
     }
 
-    @RequestMapping("/getUse")
+    @RequestMapping("/launch")
     public MetricJson getM() throws Exception {
         MetricJson m=new MetricJson();
         paths=new String[]{
-                "/Users/lijiaxing/Downloads/junit/junit4-r4.8",
-                "/Users/lijiaxing/Downloads/junit/junit4-r4.9",
-                "/Users/lijiaxing/Downloads/junit/junit4-r4.10",
-                "/Users/lijiaxing/Downloads/junit/junit4-r4.11",
-                "/Users/lijiaxing/Downloads/junit/junit4-r4.12"
+            "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.0.0",
+            "E:\\IDEAProject\\demo\\ZXing\\zxing-zxing-3.1.0",
         };
         m.calculateMetrics(paths);
 //        Data.VersionInfo.Basic b=new Data.VersionInfo.Basic("loc",11);
