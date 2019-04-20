@@ -27,11 +27,12 @@ public class TestModel {
         "C:\\Users\\Thinkpad\\Desktop\\变更预测\\JCM\\junit4-r4.9b3"
     };
     junits = new String[]{
-        "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.8",
-        "E:\\IDEAProject\\demo\\JUnit\\junit4-r4.9",
+
+            "/Users/lijiaxing/Downloads/junit/junit4-r4.11",
+            "/Users/lijiaxing/Downloads/junit/junit4-r4.12"
     };
 
-    paths = zxings;
+    paths = junits;
   }
 
   /**
@@ -41,7 +42,6 @@ public class TestModel {
   public void calculateMetric() throws Exception {
     MetricsExtractor m = new MetricsExtractor(paths);
     m.doExtract().doPredict();
-    System.out.println(1);
   }
 
   /**
