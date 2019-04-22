@@ -7,10 +7,12 @@ import cn.edu.seu.aggregation.ClassDiffEntity;
 import cn.edu.seu.aggregation.MethodDiffEntity;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
+import weka.classifiers.AbstractClassifier;
 
 public class TestModel {
 
@@ -32,7 +34,7 @@ public class TestModel {
             "/Users/lijiaxing/Downloads/junit/junit4-r4.12"
     };
 
-    paths = junits;
+    paths = zxings;
   }
 
   /**
@@ -41,12 +43,14 @@ public class TestModel {
   @Test
   public void calculateMetric() throws Exception {
     MetricsExtractor m = new MetricsExtractor(paths);
-    m.doExtract().doPredict();
+    Object[] ret=m.doExtract().doPredict();
+    AbstractClassifier classifier=(AbstractClassifier)ret[0];
+    HashMap<String,Boolean>  predicted=(HashMap<String,Boolean>)ret[1];
+    for(Map.Entry<String,Boolean> each:predicted.entrySet()){
+      System.out.println(each.getKey()+"---"+each.getValue());
+    }
   }
 
-  /**
-   * 测试预测模型
-   */
   @Test
   public void classify() throws Exception {
 //    InputStream train = TestModel.class.getResourceAsStream("/zxing 3.0.0.arff");

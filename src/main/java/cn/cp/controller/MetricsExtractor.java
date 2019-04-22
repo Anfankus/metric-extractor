@@ -83,7 +83,7 @@ public class MetricsExtractor {
    * SMO}作为学习器，如果输入版本数量小于2，丢出异常
    *
    * @return 返回长度为2的数组，其中类型为{ {@link AbstractClassifier}学习器, {@link HashMap<String,Boolean>
-   * <类名，是否变化>}}
+   * }<类名，是否变化>}
    * @throws Exception 输入版本数量小于等于1时抛出异常
    */
   public Object[] doPredict() throws Exception {
@@ -119,7 +119,7 @@ public class MetricsExtractor {
    * @return 返回结果为长度为2的数组，其中第一个元素为学习器模型{{@link AbstractClassifier}}，对于第二个元素，如果参数test为空，返回
    * null，否则，返回测试集的评估结果{{@link Evaluation}}
    */
-  public Object[] classify(Class<? extends AbstractClassifier> cls, Instances train,
+  private Object[] classify(Class<? extends AbstractClassifier> cls, Instances train,
       Instances test) {
     try {
       AbstractClassifier classifier = cls.newInstance();
