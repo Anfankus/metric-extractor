@@ -13,6 +13,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import weka.classifiers.AbstractClassifier;
+import weka.classifiers.Evaluation;
 
 public class TestModel {
 
@@ -34,7 +35,7 @@ public class TestModel {
             "/Users/lijiaxing/Downloads/junit/junit4-r4.12"
     };
 
-    paths = zxings;
+    paths = junits;
   }
 
   /**
@@ -44,11 +45,12 @@ public class TestModel {
   public void calculateMetric() throws Exception {
     MetricsExtractor m = new MetricsExtractor(paths);
     Object[] ret=m.doExtract().doPredict();
-    AbstractClassifier classifier=(AbstractClassifier)ret[0];
+    Evaluation eval=(Evaluation)ret[0];
     HashMap<String,Boolean>  predicted=(HashMap<String,Boolean>)ret[1];
     for(Map.Entry<String,Boolean> each:predicted.entrySet()){
       System.out.println(each.getKey()+"---"+each.getValue());
     }
+    int a=1;
   }
 
   @Test

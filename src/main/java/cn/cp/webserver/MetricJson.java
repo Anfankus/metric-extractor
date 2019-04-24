@@ -5,6 +5,7 @@ import ch.uzh.ifi.seal.changedistiller.ChangeDistiller.Language;
 import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
 import cn.cp.controller.MetricsExtractor;
 import cn.cp.model.SingleClassAllMetrics;
+import weka.classifiers.AbstractClassifier;
 
 import java.util.*;
 
@@ -26,12 +27,16 @@ public class MetricJson {
 
     public void calculateMetrics(String[] paths) throws Exception {
         MetricsExtractor m = new MetricsExtractor(paths);
-        m.doExtract();
+        Object[] ret=m.doExtract().doPredict();
+//        AbstractClassifier classifier=(AbstractClassifier)ret[0];
+//        HashMap<String,Boolean>  predicted=(HashMap<String,Boolean>)ret[1];
         for (int i = 0; i < paths.length; i++) {
             ArrayList<Data.VersionInfo.Basic> basic = new ArrayList<>();
+            basic.add(new Data.VersionInfo.Basic("项目名称",m.getResultCached().getMetrics().get(i).getProjectName()));
+
             String[] head = {"className", "type", "changeValue", "changeType", "dit", "noc", "wmc", "cbo",
                     "lcom", "rfc", "nom", "nopm", "nosm", "nof", "nopf", "nosf", "nosi", "loc"};
-            ArrayList<ArrayList<String>> data_2 = new ArrayList<>();
+            ArrayList<ArrayList<String>> data_2 = new ArrayList<>();ArrayList<Data.VersionInfo.Basic> basics=new ArrayList<>();
             Iterator iterator = m.getResultCached().getMetrics().get(i).getMetrics().entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry entry = (Map.Entry) iterator.next();
@@ -86,9 +91,9 @@ class Data {
 
         static class Basic {
             public String key;
-            public int value;
+            public String value;
 
-            public Basic(String k, int v) {
+            public Basic(String k, String v) {
                 this.key = k;
                 this.value = v;
             }
@@ -112,13 +117,17 @@ class Data {
             String classname;
             boolean isChanged;
         }
-
         public String version;
         public ArrayList<Data_2> data = new ArrayList<>();
         public ArrayList<HashMap<String, String>> modelInfo = new ArrayList<>();
+        public Predict(String v,ArrayList<Data_2> d,ArrayList<HashMap<String,String>> m){
+            this.version=v;
+            this.data=d;
+            this.modelInfo=m;
+        }
     }
 
     public ArrayList<VersionInfo> versionInfo = new ArrayList<>();
-    public Predict predict = new Predict();
+    public Predict predict;
 }
 

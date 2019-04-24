@@ -22,7 +22,6 @@ public class UnZipFile {
     @SuppressWarnings("rawtypes")
     public static void unZipFiles(File zipFile) throws IOException {
         ZipFile zip = new ZipFile(zipFile, Charset.forName("GBK"));//解决中文文件夹乱码  
-        String name1=zip.getName();
         String name = zip.getName().substring(zip.getName().lastIndexOf('\\') + 1, zip.getName().lastIndexOf('/'));
         File pathFile = new File(name);
         if (!pathFile.exists()) {
@@ -45,7 +44,7 @@ public class UnZipFile {
                 continue;
             }
             // 输出文件路径信息  
-            System.out.println(outPath);
+            //System.out.println(outPath);
 
             FileOutputStream out = new FileOutputStream(outPath);
             byte[] buf1 = new byte[1024];
@@ -62,11 +61,14 @@ public class UnZipFile {
 
     //测试  
     public static void main(String[] args) {
-        try {
-            unZipFiles(new File("/Users/lijiaxing/Downloads/springboot.zip"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            //unZipFiles(new File("/Users/lijiaxing/Downloads/springboot.zip"));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        String a= "/Users/lijiaxing/Downloads/junit/junit4-r4.11.zip";
+        a=a.substring(0,a.lastIndexOf('.'));
+        System.out.println(a);
     }
 }
 

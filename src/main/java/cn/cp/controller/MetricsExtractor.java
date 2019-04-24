@@ -82,7 +82,7 @@ public class MetricsExtractor {
    * 运行预测，如果输入版本数量大于2，使用前两个版本的度量值进行学习器删选，以召回率作为标准选择较优的， 如果输入版本数量等于2，默认使用{@link
    * SMO}作为学习器，如果输入版本数量小于2，丢出异常
    *
-   * @return 返回长度为2的数组，其中类型为{ {@link AbstractClassifier}学习器, {@link HashMap<String,Boolean>
+   * @return 返回长度为2的数组，其中类型为{ {@link Evaluation}评估结果, {@link HashMap<String,Boolean>
    * }<类名，是否变化>}
    * @throws Exception 输入版本数量小于等于1时抛出异常
    */
@@ -90,8 +90,8 @@ public class MetricsExtractor {
     if (this.resultCached.getMetrics().size() <= 1) {
       throw new Exception("版本数量不足以预测");
     } else if (this.resultCached.getMetrics().size() == 2) {
-      Object[] result = classify(SMO.class, resultCached.getMetrics().get(0).getWekaData(true),
-          null);
+      Instances train=resultCached.getMetrics().get(0).getWekaData(true);
+      Object[] result = classify(SMO.class, train, train);
       AbstractClassifier classifier = (AbstractClassifier) result[0];
 
       HashMap<String, Boolean> ret = new HashMap<>();
@@ -103,6 +103,7 @@ public class MetricsExtractor {
         double tmp = classifier.classifyInstance(ins.get(i));
         ret.put(m.get(i).getClassName(), tmp < 0.5);
       }
+      result[0]=result[1];
       result[1] = ret;
       return result;
     } else {

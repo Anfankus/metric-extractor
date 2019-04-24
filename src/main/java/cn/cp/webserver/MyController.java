@@ -19,8 +19,8 @@ import static cn.cp.Util.UnZipFile.unZipFiles;
  */
 @RestController
 public class MyController implements Serializable {
-    String [] paths;
-
+    String [] paths=new String[2];
+    int count=0;
     @PostMapping("/upload")
     public Object upload(@RequestParam("file") MultipartFile fileUpload){
         //获取文件名
@@ -30,8 +30,9 @@ public class MyController implements Serializable {
         try {
             //将图片保存到static文件夹里
             fileUpload.transferTo(new File(filePath+fileName));
-           // unZipFiles(new File(filePath+fileName));
-
+            unZipFiles(new File(filePath+fileName));
+            paths[count]=(filePath+fileName).substring(0,(filePath+fileName).lastIndexOf('.'));
+            count++;
             return "success to upload";
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,11 +48,12 @@ public class MyController implements Serializable {
     @RequestMapping("/launch")
     public MetricJson getM() throws Exception {
         MetricJson m=new MetricJson();
-        paths=new String[]{
-                "/Users/lijiaxing/Downloads/junit/junit4-r4.11",
-                "/Users/lijiaxing/Downloads/junit/junit4-r4.12"
-        };
+//        paths=new String[]{
+//                "/Users/lijiaxing/Downloads/junit/junit4-r4.11",
+//                "/Users/lijiaxing/Downloads/junit/junit4-r4.12"
+//        };
         m.calculateMetrics(paths);
+        count=0;
         return m;
     }
 
