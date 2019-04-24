@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
-import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Evaluation;
 
 public class TestModel {
@@ -35,7 +34,7 @@ public class TestModel {
             "/Users/lijiaxing/Downloads/junit/junit4-r4.12"
     };
 
-    paths = junits;
+    paths = zxings;
   }
 
   /**
