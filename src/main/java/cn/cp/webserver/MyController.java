@@ -1,5 +1,6 @@
 package cn.cp.webserver;
 
+import java.util.Arrays;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,21 +23,22 @@ public class MyController implements Serializable {
     String [] paths=new String[2];
     int count=0;
     @PostMapping("/upload")
-    public Object upload(@RequestParam("file") MultipartFile fileUpload){
+    public Boolean upload(@RequestParam("file") MultipartFile fileUpload){
         //获取文件名
         String fileName = fileUpload.getOriginalFilename();
         //指定本地文件夹存储图片
-        String filePath = "/Users/lijiaxing/Downloads/junit/";
+        String filePath = System.getProperty("user.home")+"/Downloads/";
+        File f=new File(filePath+fileName);
         try {
             //将图片保存到static文件夹里
-            fileUpload.transferTo(new File(filePath+fileName));
-            unZipFiles(new File(filePath+fileName));
+            fileUpload.transferTo(f);
+            unZipFiles(f);
             paths[count]=(filePath+fileName).substring(0,(filePath+fileName).lastIndexOf('.'));
             count++;
-            return "success to upload";
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
-            return "fail to upload";
+            return false;
         }
     }
 
@@ -47,6 +49,7 @@ public class MyController implements Serializable {
 
     @RequestMapping("/launch")
     public MetricJson getM() throws Exception {
+      System.out.println(Arrays.toString(paths));
         MetricJson m=new MetricJson();
 //        paths=new String[]{
 //                "/Users/lijiaxing/Downloads/junit/junit4-r4.11",

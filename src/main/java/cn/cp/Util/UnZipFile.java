@@ -22,7 +22,7 @@ public class UnZipFile {
     @SuppressWarnings("rawtypes")
     public static void unZipFiles(File zipFile) throws IOException {
         ZipFile zip = new ZipFile(zipFile, Charset.forName("GBK"));//解决中文文件夹乱码  
-        String name = zip.getName().substring(zip.getName().lastIndexOf('\\') + 1, zip.getName().lastIndexOf('/'));
+        String name = zip.getName().substring(0,zip.getName().lastIndexOf('.'));
         File pathFile = new File(name);
         if (!pathFile.exists()) {
             pathFile.mkdirs();
@@ -55,7 +55,9 @@ public class UnZipFile {
             in.close();
             out.close();
         }
+        zip.close();
         System.out.println("******************解压完毕********************");
+
         return;
     }
 

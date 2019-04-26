@@ -6,7 +6,7 @@ declare namespace Metric {
       version: string,
       //基本信息，键值对格式
       basic: Array<{
-        key: string,
+        name: string,
         value: number
       }>,
       //度量信息
@@ -31,7 +31,7 @@ declare namespace Metric {
       }>,
       //预测使用的学习器相关信息，键值对格式，如 {key:'recall',value:'0.9'}
       modelInfo: Array<{
-        key: string,
+        name: string,
         value: string
       }>
     }
