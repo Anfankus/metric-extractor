@@ -34,7 +34,7 @@ public class TestModel {
             "/Users/lijiaxing/Downloads/junit/junit4-r4.12"
     };
 
-    paths = zxings;
+    paths = junits;
   }
 
   /**
@@ -45,6 +45,16 @@ public class TestModel {
     MetricsExtractor m = new MetricsExtractor(paths);
     Object[] ret=m.doExtract().doPredict();
     Evaluation eval=(Evaluation)ret[0];
+    HashMap<String,String> temp=new HashMap<>();
+    temp.put("正确分类实例",String.valueOf(eval.correct()));
+    temp.put("错误分类实例",String.valueOf(eval.incorrect()));
+    temp.put("Kappa统计量",String.valueOf(eval.kappa()));
+    temp.put("平均绝对误差",String.valueOf(eval.meanAbsoluteError()));
+    temp.put("均方根误差",String.valueOf(eval.rootMeanSquaredError()));
+    temp.put("相对误差",String.valueOf(eval.relativeAbsoluteError())+"%");
+    temp.put("根相对平方误差",String.valueOf(eval.rootRelativeSquaredError())+"%");
+    temp.put("实例总数",String.valueOf(eval.numInstances()));
+    System.out.println(eval.toSummaryString());
     HashMap<String,Boolean>  predicted=(HashMap<String,Boolean>)ret[1];
     for(Map.Entry<String,Boolean> each:predicted.entrySet()){
       System.out.println(each.getKey()+"---"+each.getValue());
