@@ -61,7 +61,7 @@ public class MetricsExtractor {
       for (String eachClass : metrics.getComparetors().get(0).getAdd()) {
         SingleClassAllMetrics s = metrics.getMetrics().get(1).getMetrics().get(eachClass);
         if (s != null) {
-          s.setChangeType(ChangeType.add);
+          s.setChangeType(ChangeType.added);
         }
       }
 
@@ -91,7 +91,7 @@ public class MetricsExtractor {
       throw new Exception("版本数量不足以预测");
     } else if (this.resultCached.getMetrics().size() == 2) {
       Instances train=resultCached.getMetrics().get(0).getWekaData(true);
-      Object[] result = classify(SMO.class, train, train);
+      Object[] result = classify(J48.class, train, train);
       AbstractClassifier classifier = (AbstractClassifier) result[0];
 
       HashMap<String, Boolean> ret = new HashMap<>();

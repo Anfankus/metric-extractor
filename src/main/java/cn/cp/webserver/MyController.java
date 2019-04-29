@@ -21,6 +21,7 @@ import static cn.cp.Util.UnZipFile.unZipFiles;
 public class MyController implements Serializable {
     String [] paths=new String[2];
     int count=0;
+
     @PostMapping("/upload")
     public Boolean upload(@RequestParam("file") MultipartFile fileUpload){
         //获取文件名
@@ -49,6 +50,7 @@ public class MyController implements Serializable {
       System.out.println(Arrays.toString(paths));
         MetricJson m=new MetricJson();
         m.calculateMetrics(paths);
+        paths=new String[2];
         count=0;
         return m;
     }

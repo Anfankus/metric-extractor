@@ -43,14 +43,8 @@ public class MetricJson {
                 ArrayList<String> temp = new ArrayList<>();
                 temp.add((String) entry.getKey());
                 temp.add(s.getMetrics().getType());
-                    if (s.getChangeType() == null || s.getChangeValue() == null) {
-                        temp.add("0");
-                        temp.add("null");
-                    } else {
-                        temp.add(s.getChangeValue().toString());
-                        temp.add(s.getChangeType().toString());
-                    }
-
+                temp.add(s.getChangeValue()==null?"0":s.getChangeValue().toString());
+                temp.add(s.getChangeType()==null?"null": s.getChangeType().toString());
                 temp.add(String.valueOf(s.getMetrics().getDit()));
                 temp.add(String.valueOf(s.getMetrics().getNoc()));
                 temp.add(String.valueOf(s.getMetrics().getWmc()));
@@ -81,7 +75,7 @@ public class MetricJson {
             data_2s.add(new Data.Predict.Data_2(name,value));
         }
         this.data.predict=new Data.Predict(m.getResultCached().getMetrics().get(1).getVersion(),data_2s,modelinfos);
-
+        int aaa=1;
     }
 }
 
