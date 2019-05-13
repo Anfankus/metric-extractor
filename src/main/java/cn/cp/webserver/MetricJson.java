@@ -75,7 +75,6 @@ public class MetricJson {
             data_2s.add(new Data.Predict.Data_2(name,value));
         }
         this.data.predict=new Data.Predict(m.getResultCached().getMetrics().get(1).getVersion(),data_2s,modelinfos);
-        int aaa=1;
     }
 }
 
@@ -103,7 +102,7 @@ class Data {
 
         public String projectName;
         public String version;
-        public ArrayList<Basic> basic = new ArrayList<>();
+        public ArrayList<Basic> basic;
         public Metric metric;
 
         public VersionInfo(String p, String v, ArrayList<Basic> b, Metric m) {
