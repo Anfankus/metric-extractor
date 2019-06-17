@@ -26,7 +26,7 @@ public class MyController implements Serializable {
     public Boolean upload(@RequestParam("file") MultipartFile fileUpload){
         //获取文件名
         String fileName = fileUpload.getOriginalFilename();
-        String filePath = System.getProperty("user.home")+"/Downloads/junit/";
+        String filePath = System.getProperty("user.home")+"/Downloads/metrics/"+fileName;
         File fi=new File(filePath);
         if(!fi.exists()&& !fi .isDirectory()){
             fi.mkdir();
