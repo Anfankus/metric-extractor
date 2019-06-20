@@ -58,7 +58,7 @@ public class MultiVersionMetrics {
         if (currentClass != null) {
           currentClass.setChange(changeVal, changeVal > midVal);
         } else {
-          System.out.println("类未找到:" + currentClassName + currentVer.getVersion());
+          //System.out.println("类未找到:" + currentClassName + currentVer.getVersion());
         }
       }//end for
 
@@ -69,7 +69,7 @@ public class MultiVersionMetrics {
           currentClass.setChange(0, false);
           currentClass.setChangeType(ChangeType.unchanged);
         } else {
-          System.out.println("类未找到:" + className + currentVer.getVersion());
+          //System.out.println("类未找到:" + className + currentVer.getVersion());
         }
       }
 

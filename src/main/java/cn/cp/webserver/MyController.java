@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.Serializable;
 
-import static cn.cp.Util.UnZipFile.unZipFiles;
+import static cn.cp.Util.UnZipFile.unZipFile;
 
 /**
  * 测试控制器
@@ -19,24 +19,26 @@ import static cn.cp.Util.UnZipFile.unZipFiles;
  */
 @RestController
 public class MyController implements Serializable {
+    final String savePath=System.getProperty("user.home")+File.separator+"Downloads"+File.separator+"metrics";
+
     String [] paths=new String[2];
     int count=0;
 
     @PostMapping("/upload")
     public Boolean upload(@RequestParam("file") MultipartFile fileUpload){
         //获取文件名
-        String fileName = fileUpload.getOriginalFilename();
-        String filePath = System.getProperty("user.home")+"/Downloads/metrics/"+fileName;
-        File fi=new File(filePath);
-        if(!fi.exists()&& !fi .isDirectory()){
-            fi.mkdir();
+        String uploadedFileName=fileUpload.getOriginalFilename();
+        String saveFileName=savePath+File.separator+uploadedFileName;
+        File saveFile=new File(saveFileName);
+        File saveFileDir=new File(savePath);
+        if(!saveFileDir.exists()||!saveFileDir.isDirectory()){
+            saveFileDir.mkdir();
         }
-        File f=new File(filePath+fileName);
 
         try {
-            fileUpload.transferTo(f);
-            unZipFiles(f);
-            paths[count]=(filePath+fileName).substring(0,(filePath+fileName).lastIndexOf('.'));
+            fileUpload.transferTo(saveFile);
+            unZipFile(saveFile);
+            paths[count]=saveFileName.substring(0,saveFileName.lastIndexOf('.'));
             count++;
             return true;
         } catch (Exception e) {

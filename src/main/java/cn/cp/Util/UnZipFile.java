@@ -20,49 +20,44 @@ public class UnZipFile {
      *      
      */
     @SuppressWarnings("rawtypes")
-    public static void unZipFiles(File zipFile) throws IOException {
-        ZipFile zip = new ZipFile(zipFile, Charset.forName("GBK"));//解决中文文件夹乱码  
-        String name = zip.getName().substring(0,zip.getName().lastIndexOf('/')+1);
-        File pathFile = new File(name);
-        if (!pathFile.exists()) {
-            pathFile.mkdirs();
-        }
-
+    public static void unZipFile(File zipFile) throws IOException {
+        ZipFile zip = new ZipFile(zipFile, Charset.forName("GBK") );//解决中文文件夹乱码  
+        String dir=zipFile.getAbsolutePath().substring(0,zipFile.getAbsolutePath().lastIndexOf(File.separator));
         for (Enumeration<? extends ZipEntry> entries = zip.entries(); entries.hasMoreElements(); ) {
             ZipEntry entry = (ZipEntry) entries.nextElement();
             String zipEntryName = entry.getName();
-            InputStream in = zip.getInputStream(entry);
-            String outPath = (name+'/'+zipEntryName).replaceAll("\\*", "/");
-
-            // 判断路径是否存在,不存在则创建文件路径  
-            File file = new File(outPath.substring(0, outPath.lastIndexOf('/')));
-            if (!file.exists()) {
-                file.mkdirs();
+            String sapaEs=File.separator.replaceAll("\\\\","\\\\\\\\");
+            String outPath = (dir+File.separator+zipEntryName).replaceAll("/",sapaEs);
+            File outFile=new File(outPath);
+            if(outPath.endsWith(File.separator)&&!outFile.exists()){
+                outFile.mkdirs();
+            }else {
+                InputStream in = zip.getInputStream(entry);
+                FileOutputStream out = new FileOutputStream(outPath);
+                byte[] buf1 = new byte[1024];
+                int len;
+                while ((len = in.read(buf1)) > 0) {
+                    out.write(buf1, 0, len);
+                }
+                in.close();
+                out.close();
             }
             // 判断文件全路径是否为文件夹,如果是上面已经上传,不需要解压  
-            if (new File(outPath).isDirectory()) {
-                continue;
-            }
+//            if (new File(outPath).isDirectory()) {
+//                continue;
+//            }
             // 输出文件路径信息  
             // System.out.println(outPath);
 
-            FileOutputStream out = new FileOutputStream(outPath);
-            byte[] buf1 = new byte[1024];
-            int len;
-            while ((len = in.read(buf1)) > 0) {
-                out.write(buf1, 0, len);
-            }
-            in.close();
-            out.close();
         }
         zip.close();
-        System.out.println("******************解压完毕********************");
+        //System.out.println("******************解压完毕********************");
     }
 
     //测试  
     public static void main(String[] args) {
         try {
-            unZipFiles(new File("/Users/lijiaxing/Downloads/junitzip/junit4-r4.12.zip"));
+            unZipFile(new File("/Users/lijiaxing/Downloads/junitzip/junit4-r4.12.zip"));
         } catch (IOException e) {
             e.printStackTrace();
         }
