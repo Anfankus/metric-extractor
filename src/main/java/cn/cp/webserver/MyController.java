@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.Serializable;
 
+import static cn.cp.Util.UnZipFile.deleteDir;
 import static cn.cp.Util.UnZipFile.unZipFile;
 
 /**
@@ -38,6 +39,7 @@ public class MyController implements Serializable {
         try {
             fileUpload.transferTo(saveFile);
             unZipFile(saveFile);
+            saveFile.delete();
             paths[count]=saveFileName.substring(0,saveFileName.lastIndexOf('.'));
             count++;
             return true;
